@@ -13,6 +13,19 @@ class MCQ:
         self.image_id = question_dict['image_id']
         self.abcd = question_dict['abcd']
         self.answer_tag = question_dict['answer_tag']
+        self.completion_status = question_dict['completion_status']
+
+    def modify_json(self):
+        file_pth = f'{self.question_set}.json'
+
+        with open(file_pth, "r") as file_json:
+            file_dict_temp = json.load(file_json)
+
+        file_dict_temp[f'{self.question_set}_{self.question_number}']['completion_status'] = self.completion_status
+
+        with open(file_pth, "w") as file_json:
+            json.dump(file_dict_temp, file_json)
+
 
 def scale_image(image_pth_list, h=384, w=768):
     imgs_pil_list = []
@@ -42,9 +55,9 @@ class QuizApp(tk.Tk):
     def __init__(self, file_path_list):
         tk.Tk.__init__(self)
         self.file_path_list = file_path_list
-        self.configs_tk = {'font': 'Helvetica 10',
-                           'font_i': 'Helvetica 10 italic',
-                           'font_b': 'Helvetica 10 bold',
+        self.configs_tk = {'font': 'Helvetica 12',
+                           'font_i': 'Helvetica 12 italic',
+                           'font_b': 'Helvetica 12 bold',
                            'w_length': 770,
                            'color_orange': '#fed06a',
                            'color_green': '#88d8b0',
@@ -52,18 +65,21 @@ class QuizApp(tk.Tk):
                            'color_red': '#f96e5a',
                            'color_blue': '#65cbda'}
         self.order_var = tk.StringVar()
+        self.hidden_var = tk.StringVar()
         self.year_list = [f'{y}' for y in range(2022, 2015, -1)]
         self.category_list = ['Nasjonal', 'MD4062', 'MD4061', 'MD4043', 'MD4042', 'MD4030', 'MD4020', 'MD4011']
+        self.order_mode = ['Kronologisk', 'Tilfeldig']
+        self.hidden_mode = ['Standard MCQ', 'Skjult MCQ']
         self.title('NTNUiO')
-        self.master_frame = tk.Frame(self)
-        self.master_frame.pack(padx=20, pady=20)
+        self.frame_main = tk.Frame(self)
+        self.frame_main.pack(padx=20, pady=20)
 
-        self.create_menu_page()
+        self.create_frame_menu()
         self.count_relative = tk.IntVar()
         self.choice_var = tk.StringVar()
 
-    def create_dock_container(self):
-        self.dock_container = tk.Frame(self.master_frame)
+    def create_question_dock_container(self):
+        self.dock_container = tk.Frame(self.frame_quiz)
         self.dock_container.grid(row=0, column=0, sticky='w')
 
         # Create progress bar
@@ -99,7 +115,7 @@ class QuizApp(tk.Tk):
         self.feedback_text.grid(row=1, column=1)
 
     def create_text_container(self):
-        self.text_container = tk.Frame(self.master_frame)
+        self.text_container = tk.Frame(self.frame_quiz)
         self.text_container.grid(row=1, column=0, sticky='w')
 
         title = f'Eksamensett: {self.questions[self.current_question_index].question_set}\nOppgave: {self.questions[self.current_question_index].question_number}'
@@ -112,7 +128,7 @@ class QuizApp(tk.Tk):
         question_text.pack(anchor='w')
 
     def create_image_container(self):
-        self.image_container = tk.Frame(self.master_frame)
+        self.image_container = tk.Frame(self.frame_quiz)
         self.image_container.grid(row=2, column=0, sticky='')
 
         if len(self.questions[self.current_question_index].image_id) != 0:
@@ -150,9 +166,8 @@ class QuizApp(tk.Tk):
                 self.left_scroll_button.grid(row=0, column=0)
                 self.right_scroll_button.grid(row=0, column=2)
 
-
     def create_choice_container(self):
-        self.choice_container = tk.Frame(self.master_frame)
+        self.choice_container = tk.Frame(self.frame_quiz)
         self.choice_container.grid(row=3, column=0, sticky='w')
 
         self.choice_explainations = []
@@ -174,11 +189,24 @@ class QuizApp(tk.Tk):
             self.choice_explaination_contents.append(explaination)
             self.choice_explainations.append(choice_explanation)
 
-    def create_year_box_container(self):
-        self.year_box_container = tk.Frame(self.master_frame)
-        self.year_box_container.grid(row=0, column=0, sticky='nw')
 
-        box_label = tk.LabelFrame(self.year_box_container, text='ÅRGANG', font=self.configs_tk['font_b'], padx=20, pady=20)
+    def create_frame_quiz(self):
+        self.frame_quiz = tk.Frame(self.frame_main)
+        self.frame_quiz.pack()
+
+        self.create_question_dock_container()
+        self.create_text_container()
+        self.create_image_container()
+        if self.hidden_var.get() == 'Skjult MCQ':
+            self.submit_button.configure(text='VIS', command=self.on_show)
+        else:
+            self.create_choice_container()
+
+    def create_year_box_container(self):
+        self.year_box_container = tk.Frame(self.lower_menu_container)
+        self.year_box_container.grid(row=1, column=0, sticky='nw')
+
+        box_label = tk.LabelFrame(self.year_box_container, text='ÅRGANG', font=self.configs_tk['font_b'], padx=40, pady=20)
         box_label.pack()
         self.check_label_year = []
         self.check_label_year_vars = []
@@ -201,10 +229,10 @@ class QuizApp(tk.Tk):
 
 
     def create_category_box_container(self):
-        self.category_box_container = tk.Frame(self.master_frame)
-        self.category_box_container.grid(row=0, column=1, sticky='nw')
+        self.category_box_container = tk.Frame(self.lower_menu_container)
+        self.category_box_container.grid(row=1, column=1, sticky='nw')
 
-        box_label = tk.LabelFrame(self.category_box_container, text='EKSAMENSETT', font=self.configs_tk['font_b'], padx=20, pady=20)
+        box_label = tk.LabelFrame(self.category_box_container, text='EKSAMENSETT', font=self.configs_tk['font_b'], padx=40, pady=20)
         box_label.pack()
         self.check_label_category = []
         self.check_label_category_vars = []
@@ -224,49 +252,182 @@ class QuizApp(tk.Tk):
         select_all_button.pack()
         remove_all_button.pack()
 
-    def create_order_box_container(self):
-        self.order_box_container = tk.Frame(self.master_frame)
-        self.order_box_container.grid(row=0, column=2, sticky='nw')
 
-        box_label = tk.LabelFrame(self.order_box_container, text='REKKEFØLGE', font=self.configs_tk['font_b'], padx=20, pady=20)
+    def create_order_box_container(self):
+        self.order_box_container = tk.Frame(self.lower_menu_container)
+        self.order_box_container.grid(row=1, column=2, sticky='nw')
+
+        box_label = tk.LabelFrame(self.order_box_container, text='REKKEFØLGE', font=self.configs_tk['font_b'], padx=40, pady=20)
         box_label.pack()
 
         self.order_var.set('0')
-        for r in ('Tilfeldig', 'Kronologisk'):
+        for r in self.order_mode:
             button = tk.Radiobutton(box_label, text=r, variable=self.order_var, value=r, font=self.configs_tk['font'])
             button.pack(anchor='w')
 
-    def create_start_container(self):
-        self.start_container = tk.Frame(self.master_frame)
-        self.start_container.grid(row=0, column=3, sticky='nw',pady=8)
+    def create_hidden_mode_container(self):
+        self.hidden_mode_container = tk.Frame(self.lower_menu_container)
+        self.hidden_mode_container.grid(row=1, column=3, sticky='nw')
+
+        box_label = tk.LabelFrame(self.hidden_mode_container, text='MODUS', font=self.configs_tk['font_b'], padx=40, pady=20)
+        box_label.pack()
+
+        self.hidden_var.set('0')
+        for r in self.hidden_mode:
+            button = tk.Radiobutton(box_label, text=r, variable=self.hidden_var, value=r, font=self.configs_tk['font'])
+            button.pack(anchor='w')
+
+
+    def create_menu_dock_container(self):
+        self.start_container = tk.Frame(self.upper_menu_container)
+        self.start_container.pack()
 
         start_button = tk.Button(self.start_container, text='START', command=self.on_start, bg=self.configs_tk['color_green'], height=1,
                                        width=13, font=self.configs_tk['font'])
-        start_button.pack()
+        start_button.grid(row=1, column=2)
 
-    def create_menu_page(self):
-        self.questions = None
+        stats_button = tk.Button(self.start_container, text='VIS UTVALG', command=self.on_check,
+                                 bg='white', height=1, width=13, font=self.configs_tk['font'])
+        stats_button.grid(row=1, column=3)
+
+        reset_button = tk.Button(self.start_container, text='RESET', command=self.on_reset,
+                                 bg=self.configs_tk['color_grey'], fg='white', height=1, width=13, font=self.configs_tk['font'])
+        reset_button.grid(row=1, column=1)
+
+        self.remaining_questions_number = tk.Label(self.start_container, text='Fullført: 0% (0 / 0)',
+                                                   font=self.configs_tk['font'], justify='left',
+                                                   wraplength=self.configs_tk['w_length'])
+        self.remaining_questions_number.grid(row=0, column=4, sticky='nw')
+        white_space = tk.Label(self.start_container, text='୧ ( ´ ◉ ◞౪◟ ◉ ) ୨',
+                                                   font=self.configs_tk['font'], justify='left',
+                                                   wraplength=self.configs_tk['w_length'])
+        white_space.grid(row=0, column=0, sticky='nw')
+
+
+    def create_menu_info_container(self):
+        self.menu_info_container = tk.Frame(self.frame_menu)
+        self.menu_info_container.pack(pady=20)
+
+        info_text = tk.Label(self.menu_info_container, text='RESET: Tilbakestiller oppgaver som er fullført for utvalget.\nSTART: Starter quiz for utvalget. Fullførte ekskluderes med mindre de tilbakestilles.\nVIS UTVALG: Viser antall oppgaver og fullføringsgrad for utvalget.', font=self.configs_tk['font_i'], justify='left',
+                               wraplength=self.configs_tk['w_length'], pady=10)
+        info_text.pack(anchor='w')
+
+        text = tk.Label(self.menu_info_container, text='Kilder:\nhttps://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/felles-avsluttende-deleksamen/\nhttps://i.ntnu.no/wiki/-/wiki/Norsk/Eksamensoppgaver+-+Medisin+-+MH',
+                                 font=self.configs_tk['font'], justify='left', wraplength=self.configs_tk['w_length'])
+        text.pack(anchor='w')
+
+    def create_frame_menu(self):
+        self.questions = []
+        self.questions_completed = []
         self.current_question_index = 0
         self.correct_questions = 0
 
+        self.frame_menu = tk.Frame(self.frame_main)
+        self.frame_menu.pack()
+
+        self.upper_menu_container = tk.Frame(self.frame_menu)
+        self.upper_menu_container.pack()
+        self.create_menu_dock_container()
+
+        self.create_menu_info_container()
+
+        self.lower_menu_container = tk.Frame(self.frame_menu)
+        self.lower_menu_container.pack()
         self.create_year_box_container()
         self.create_category_box_container()
         self.create_order_box_container()
-        self.create_start_container()
+        self.create_hidden_mode_container()
+
 
     def create_quiz_page(self):
-        self.year_box_container.destroy()
-        self.category_box_container.destroy()
-        self.order_box_container.destroy()
-        self.start_container.destroy()
+        self.frame_menu.destroy()
+        self.create_frame_quiz()
 
-        self.create_dock_container()
-        self.create_text_container()
-        self.create_image_container()
+    def on_show(self):
+        self.submit_button.configure(text='SVAR', command=self.on_submit)
         self.create_choice_container()
 
+    def on_reset(self):
+        if sum([yv.get() for yv in self.check_label_year_vars]) > 0 and sum([cv.get() for cv in self.check_label_category_vars]) > 0:
+            included_year_tags = []
+            for y in zip(self.year_list, self.check_label_year_vars):
+                if y[1].get() == 1:
+                    included_year_tags.append(y[0])
+
+            included_category_tags = []
+            for c in zip(self.category_list, self.check_label_category_vars):
+                if c[1].get() == 1:
+                    included_category_tags.append(c[0])
+
+            included_paths = []
+            for pth in self.file_path_list:
+                no_ext = pth.rsplit('.', 1)[0].lower()
+                for yt in included_year_tags:
+                    for ct in included_category_tags:
+                        if yt.lower() in no_ext and ct.lower() in no_ext:
+                            included_paths.append(pth)
+
+            completed_questions = []
+            for pth in included_paths:
+                file_json = open(pth)
+                try:
+                    file_dict = json.load(file_json)
+                except:
+                    print(file_json)
+
+                for q in range(1, len(file_dict) + 1):
+                    question = MCQ(file_dict[f'{pth.rsplit(".", 1)[0]}_{q}'])
+                    if question.completion_status == 1:
+                        completed_questions.append(question)
+
+            for r in completed_questions:
+                r.completion_status = 0
+                r.modify_json()
+
+    def on_check(self):
+        included_year_tags = []
+        for y in zip(self.year_list, self.check_label_year_vars):
+            if y[1].get() == 1:
+                included_year_tags.append(y[0])
+
+        included_category_tags = []
+        for c in zip(self.category_list, self.check_label_category_vars):
+            if c[1].get() == 1:
+                included_category_tags.append(c[0])
+
+        included_paths = []
+        for pth in self.file_path_list:
+            no_ext = pth.rsplit('.', 1)[0].lower()
+            for yt in included_year_tags:
+                for ct in included_category_tags:
+                    if yt.lower() in no_ext and ct.lower() in no_ext:
+                        included_paths.append(pth)
+
+        included_questions = 0
+        completed_questions = 0
+
+        for pth in included_paths:
+            file_json = open(pth)
+            try:
+                file_dict = json.load(file_json)
+            except:
+                print(file_json)
+
+            for q in range(1, len(file_dict) + 1):
+                question = MCQ(file_dict[f'{pth.rsplit(".", 1)[0]}_{q}'])
+                if question.completion_status == 0:
+                    included_questions += 1
+                else:
+                    completed_questions += 1
+
+        if included_questions + completed_questions > 0:
+            self.remaining_questions_number.configure(text=f'Fullført: {int(completed_questions * 100 / (completed_questions + included_questions))}% ({completed_questions} / {completed_questions + included_questions})')
+        else:
+            self.remaining_questions_number.configure(text=f'Fullført: 0% (0 / 0)')
+
+
     def on_start(self):
-        if self.order_var.get() != '0' and sum([yv.get() for yv in self.check_label_year_vars]) > 0 and sum([cv.get() for cv in self.check_label_category_vars]) > 0:
+        if self.order_var.get() != '0' and self.hidden_var.get() != '0' and sum([yv.get() for yv in self.check_label_year_vars]) > 0 and sum([cv.get() for cv in self.check_label_category_vars]) > 0:
 
             included_year_tags = []
             for y in zip(self.year_list, self.check_label_year_vars):
@@ -296,14 +457,17 @@ class QuizApp(tk.Tk):
 
                 for q in range(1, len(file_dict) + 1):
                     question = MCQ(file_dict[f'{pth.rsplit(".", 1)[0]}_{q}'])
-                    included_questions.append(question)
+                    if question.completion_status == 0:
+                        included_questions.append(question)
 
             if self.order_var.get() == 'Tilfeldig':
                 random.shuffle(included_questions)
 
             self.questions = included_questions
+
             if len(included_questions) > 0:
                 self.create_quiz_page()
+
 
     def on_selectall(self, check_box_list):
         for i in check_box_list:
@@ -355,15 +519,14 @@ class QuizApp(tk.Tk):
 
             self.create_text_container()
             self.create_image_container()
-            self.create_choice_container()
+            if self.hidden_var.get() == 'Skjult MCQ':
+                self.submit_button.configure(text='VIS', command=self.on_show)
+            else:
+                self.create_choice_container()
 
     def on_menu(self):
-        self.dock_container.destroy()
-        self.text_container.destroy()
-        self.image_container.destroy()
-        self.choice_container.destroy()
-
-        self.create_menu_page()
+        self.frame_quiz.destroy()
+        self.create_frame_menu()
 
     def on_submit(self):
         if self.choice_var.get() != '0':
@@ -371,6 +534,10 @@ class QuizApp(tk.Tk):
             if self.choice_var.get() == self.questions[self.current_question_index].answer_tag:
                 self.feedback_text.configure(text='RIKTIG')
                 self.correct_questions += 1
+
+                self.questions[self.current_question_index].completion_status = 1
+                self.questions[self.current_question_index].modify_json()
+
             else:
                 self.feedback_text.configure(text='FEIL')
 
@@ -403,7 +570,10 @@ class QuizApp(tk.Tk):
 
             self.create_text_container()
             self.create_image_container()
-            self.create_choice_container()
+            if self.hidden_var.get() == 'Skjult MCQ':
+                self.submit_button.configure(text='VIS', command=self.on_show)
+            else:
+                self.create_choice_container()
 
 
 if __name__ == '__main__':

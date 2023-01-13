@@ -7,6 +7,7 @@ class Question:
         self.image_id = []
         self.abcd = dict()
         self.answer_tag = None
+        self.completion_status = 0
 
     def set_question_set(self, string):
         self.question_set = string
@@ -45,6 +46,7 @@ class Question:
         out_dict['image_id'] = self.image_id
         out_dict['abcd'] = self.abcd
         out_dict['answer_tag'] = self.answer_tag
+        out_dict['completion_status'] = self.completion_status
 
         return out_dict
 
