@@ -27,20 +27,21 @@ class MCQ:
             json.dump(file_dict_temp, file_json)
 
 
-def scale_image(image_pth_list, h=384, w=768):
+def scale_image(image_pth_list, h=800, w=760):
     imgs_pil_list = []
     for pth in image_pth_list:
         img_pil = Image.open(pth)
 
-        if img_pil.height >= h:
+        if img_pil.width >= w:
+            aspect_ratio = img_pil.height / img_pil.width
+            new_width = w
+            new_height = int(new_width * aspect_ratio)
+
+        elif img_pil.height >= h:
             aspect_ratio = img_pil.width / img_pil.height
             new_height = h
             new_width = int(new_height * aspect_ratio)
 
-        elif img_pil.width >= w:
-            aspect_ratio = img_pil.height / img_pil.width
-            new_width = w
-            new_height = int(new_width * aspect_ratio)
         else:
             new_width = img_pil.width
             new_height = img_pil.height
@@ -51,6 +52,27 @@ def scale_image(image_pth_list, h=384, w=768):
     return imgs_pil_list
 
 
+def check_tag_in_string(question, comma_sepatered_tags_list):
+    question_string = question.question_text
+    for choice_key in question.abcd:
+        question_string += ' ' + question.abcd[choice_key]['answer']
+
+    #input_string_lower = question_string.lower()
+    #tag_list_lower = [tag.lower() for tag in comma_sepatered_tags_list]
+
+    include = False
+    for t in comma_sepatered_tags_list:
+        if t in question_string:
+            include = True
+
+    return include
+
+def input_tags_to_list(input_tags_string):
+    comma_sepatered_tags_list = input_tags_string.split(',')
+    comma_sepatered_tags_list = [i.strip(' ') for i in comma_sepatered_tags_list]
+
+    return comma_sepatered_tags_list
+
 class QuizApp(tk.Tk):
     def __init__(self, file_path_list):
         tk.Tk.__init__(self)
@@ -58,7 +80,7 @@ class QuizApp(tk.Tk):
         self.configs_tk = {'font': 'Helvetica 12',
                            'font_i': 'Helvetica 12 italic',
                            'font_b': 'Helvetica 12 bold',
-                           'w_length': 770,
+                           'w_length': 800,
                            'color_orange': '#fed06a',
                            'color_green': '#88d8b0',
                            'color_grey': '#626262',
@@ -70,13 +92,31 @@ class QuizApp(tk.Tk):
         self.category_list = ['Nasjonal', 'MD4062', 'MD4061', 'MD4043', 'MD4042', 'MD4030', 'MD4020', 'MD4011']
         self.order_mode = ['Kronologisk', 'Tilfeldig']
         self.hidden_mode = ['Standard MCQ', 'Skjult MCQ']
-        self.title('NTNUiO')
+        self.filter_tags = []
+        self.title('NTNUiO Eksamen')
+        self.geometry('960x1000')
         self.frame_main = tk.Frame(self)
-        self.frame_main.pack(padx=20, pady=20)
+        self.frame_main.pack(fill=tk.BOTH, expand=1)
+        self.create_scrollbar()
 
         self.create_frame_menu()
         self.count_relative = tk.IntVar()
         self.choice_var = tk.StringVar()
+
+    #def _on_mousewheel(self, event):
+    #    print(event.delta)
+    #    self.canvas_main.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+    def create_scrollbar(self):
+        self.canvas_main = tk.Canvas(self.frame_main)
+        self.canvas_main.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        scrollbar = tk.Scrollbar(self.frame_main, orient=tk.VERTICAL, command=self.canvas_main.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.canvas_main.configure(yscrollcommand=scrollbar.set)
+        self.canvas_main.bind('<Configure>', lambda e:self.canvas_main.configure(scrollregion=self.canvas_main.bbox("all")))
+        #self.canvas_main.bind_all("<MouseWheel>", self._on_mousewheel)
 
     def create_question_dock_container(self):
         self.dock_container = tk.Frame(self.frame_quiz)
@@ -96,7 +136,7 @@ class QuizApp(tk.Tk):
         progress_number.grid(row=0, column=0)
         correct_percent.grid(row=0, column=2)
 
-        progress_bar = ttk.Progressbar(self.progress_container, variable=self.count_relative, orient='horizontal', length=550,
+        progress_bar = ttk.Progressbar(self.progress_container, variable=self.count_relative, orient='horizontal', length=500,
                                             mode='determinate')
         progress_bar.grid(row=1, column=1)
 
@@ -191,8 +231,9 @@ class QuizApp(tk.Tk):
 
 
     def create_frame_quiz(self):
-        self.frame_quiz = tk.Frame(self.frame_main)
-        self.frame_quiz.pack()
+        self.frame_quiz = tk.Frame(self.canvas_main, pady=20, padx=80)
+        self.canvas_main.create_window((0, 0), window=self.frame_quiz, anchor="nw")
+        self.frame_quiz.bind('<Configure>', lambda e: self.canvas_main.configure(scrollregion=self.canvas_main.bbox("all")))
 
         self.create_question_dock_container()
         self.create_text_container()
@@ -295,41 +336,61 @@ class QuizApp(tk.Tk):
         reset_button.grid(row=1, column=1)
 
         self.remaining_questions_number = tk.Label(self.start_container, text='Fullført: 0% (0 / 0)',
-                                                   font=self.configs_tk['font'], justify='left',
+                                                   font=self.configs_tk['font_i'], justify='left',
                                                    wraplength=self.configs_tk['w_length'])
         self.remaining_questions_number.grid(row=0, column=4, sticky='nw')
         white_space = tk.Label(self.start_container, text='୧ ( ´ ◉ ◞౪◟ ◉ ) ୨',
-                                                   font=self.configs_tk['font'], justify='left',
+                                                   font=self.configs_tk['font_i'], justify='left',
                                                    wraplength=self.configs_tk['w_length'])
         white_space.grid(row=0, column=0, sticky='nw')
 
 
     def create_menu_info_container(self):
         self.menu_info_container = tk.Frame(self.frame_menu)
-        self.menu_info_container.pack(pady=20)
+        self.menu_info_container.pack(pady=20, anchor='w')
 
-        info_text = tk.Label(self.menu_info_container, text='RESET: Tilbakestiller oppgaver som er fullført for utvalget.\nSTART: Starter quiz for utvalget. Fullførte ekskluderes med mindre de tilbakestilles.\nVIS UTVALG: Viser antall oppgaver og fullføringsgrad for utvalget.', font=self.configs_tk['font_i'], justify='left',
+        info_text = tk.Label(self.menu_info_container, text='RESET: Tilbakestiller fullførte oppgaver for utvalget.\nSTART: Starter quiz for utvalget. Fullførte oppgaver ekskluderes med mindre de tilbakestilles.\nVIS UTVALG: Viser antall oppgaver og fullføringsgrad for utvalget.', font=self.configs_tk['font'], justify='left',
                                wraplength=self.configs_tk['w_length'], pady=10)
         info_text.pack(anchor='w')
 
-        text = tk.Label(self.menu_info_container, text='Kilder:\nhttps://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/felles-avsluttende-deleksamen/\nhttps://i.ntnu.no/wiki/-/wiki/Norsk/Eksamensoppgaver+-+Medisin+-+MH',
-                                 font=self.configs_tk['font'], justify='left', wraplength=self.configs_tk['w_length'])
+        text = tk.Text(self.menu_info_container, font=self.configs_tk['font'], height=3, borderwidth=0)
+        text.insert(1.0, 'Kilder:\nhttps://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/felles-avsluttende-deleksamen/\nhttps://i.ntnu.no/wiki/-/wiki/Norsk/Eksamensoppgaver+-+Medisin+-+MH')
+        text.configure(state='disabled')
         text.pack(anchor='w')
+
+    def create_tag_filter_container(self):
+        self.tag_filter_container = tk.Frame(self.frame_menu)
+        self.tag_filter_container.pack(anchor='w', pady=20)
+
+        info_text = tk.Label(self.tag_filter_container,
+                             text='STIKKORD FILTER:', font=self.configs_tk['font_b'], justify='left',
+                             wraplength=self.configs_tk['w_length'])
+        info_text.pack(anchor='w')
+        filter_explaination = tk.Label(self.tag_filter_container, text='Filtrerer oppgaver i utvalget basert på ønskede stikkord. Bruk "," mellom hvert stikkord (case sensitivt). Tomt filter inkluderer alle oppgaver for utvalget.', font=self.configs_tk['font_i'], justify='left',
+                             wraplength=self.configs_tk['w_length'])
+        filter_explaination.pack(anchor='w')
+
+        self.tag_input = tk.Text(self.tag_filter_container, font=self.configs_tk['font'], height=1, borderwidth=0)
+        self.tag_input.pack(anchor='w')
+
 
     def create_frame_menu(self):
         self.questions = []
         self.questions_completed = []
         self.current_question_index = 0
         self.correct_questions = 0
+        self.filter_tags = []
 
-        self.frame_menu = tk.Frame(self.frame_main)
-        self.frame_menu.pack()
+        self.frame_menu = tk.Frame(self.canvas_main, pady=20, padx=80)
+        self.canvas_main.create_window((0, 0), window=self.frame_menu, anchor="nw")
+        self.frame_menu.bind('<Configure>',lambda e: self.canvas_main.configure(scrollregion=self.canvas_main.bbox("all")))
 
         self.upper_menu_container = tk.Frame(self.frame_menu)
         self.upper_menu_container.pack()
         self.create_menu_dock_container()
 
         self.create_menu_info_container()
+        self.create_tag_filter_container()
 
         self.lower_menu_container = tk.Frame(self.frame_menu)
         self.lower_menu_container.pack()
@@ -338,10 +399,10 @@ class QuizApp(tk.Tk):
         self.create_order_box_container()
         self.create_hidden_mode_container()
 
-
     def create_quiz_page(self):
         self.frame_menu.destroy()
         self.create_frame_quiz()
+
 
     def on_show(self):
         self.submit_button.configure(text='SVAR', command=self.on_submit)
@@ -405,6 +466,7 @@ class QuizApp(tk.Tk):
 
         included_questions = 0
         completed_questions = 0
+        self.filter_tags = input_tags_to_list(self.tag_input.get("1.0", 'end-1c'))
 
         for pth in included_paths:
             file_json = open(pth)
@@ -415,10 +477,12 @@ class QuizApp(tk.Tk):
 
             for q in range(1, len(file_dict) + 1):
                 question = MCQ(file_dict[f'{pth.rsplit(".", 1)[0]}_{q}'])
-                if question.completion_status == 0:
-                    included_questions += 1
-                else:
-                    completed_questions += 1
+
+                if check_tag_in_string(question, self.filter_tags):
+                    if question.completion_status == 0:
+                        included_questions += 1
+                    else:
+                        completed_questions += 1
 
         if included_questions + completed_questions > 0:
             self.remaining_questions_number.configure(text=f'Fullført: {int(completed_questions * 100 / (completed_questions + included_questions))}% ({completed_questions} / {completed_questions + included_questions})')
@@ -448,6 +512,8 @@ class QuizApp(tk.Tk):
                             included_paths.append(pth)
 
             included_questions = []
+            self.filter_tags = input_tags_to_list(self.tag_input.get("1.0", 'end-1c'))
+
             for pth in included_paths:
                 file_json = open(pth)
                 try:
@@ -457,8 +523,9 @@ class QuizApp(tk.Tk):
 
                 for q in range(1, len(file_dict) + 1):
                     question = MCQ(file_dict[f'{pth.rsplit(".", 1)[0]}_{q}'])
-                    if question.completion_status == 0:
-                        included_questions.append(question)
+                    if check_tag_in_string(question, self.filter_tags):
+                        if question.completion_status == 0:
+                            included_questions.append(question)
 
             if self.order_var.get() == 'Tilfeldig':
                 random.shuffle(included_questions)
@@ -504,7 +571,8 @@ class QuizApp(tk.Tk):
     def on_skip(self):
         self.current_question_index += 1
         if self.current_question_index >= len(self.questions):
-            self.destroy()
+            self.frame_quiz.destroy()
+            self.create_frame_menu()
         else:
             # Update the widgets with the new question
             self.count_relative.set(int(self.current_question_index + 1) * 100 / len(self.questions))
@@ -555,7 +623,8 @@ class QuizApp(tk.Tk):
         # Move to the next question
         self.current_question_index += 1
         if self.current_question_index >= len(self.questions):
-            self.destroy()
+            self.frame_quiz.destroy()
+            self.create_frame_menu()
         else:
             # Update the widgets with the new question
             self.count_relative.set(int(self.current_question_index + 1) * 100 / len(self.questions))
