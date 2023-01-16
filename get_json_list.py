@@ -16,12 +16,12 @@ def get_json_and_image_list(input_dir, out_text):
         for fname in os.listdir(input_dir):
 
             if fname.rsplit('.', 1)[-1] == 'json' or fname.rsplit('.', 1)[-1] == 'png':
-                file_list.append(f"('{fname}', '.')")
+                file_list.append(f"('{input_dir}//{fname}', '.')")
         for f in file_list:
             text_file.write(f'{f}, ')
 
 
 if __name__ =='__main__':
-    input_dir = '.'
+    input_dir = 'lib'
     #get_json_list(input_dir, 'json_list.txt')
     get_json_and_image_list(input_dir, 'pyinstaller_list.txt')

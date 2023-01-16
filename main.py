@@ -17,8 +17,8 @@ class MCQ:
         self.answer_tag = question_dict['answer_tag']
         self.completion_status = question_dict['completion_status']
 
-    def modify_json(self, root):
-        file_pth = os.path.join(root, f'{self.question_set}.json')
+    def modify_json(self):
+        file_pth = f'{self.question_set}.json'
 
         with open(file_pth, "r") as file_json:
             file_dict_temp = json.load(file_json)
@@ -29,10 +29,10 @@ class MCQ:
             json.dump(file_dict_temp, file_json)
 
 
-def scale_image(image_pth_list, root, h=800, w=760):
+def scale_image(image_pth_list, h=800, w=760):
     imgs_pil_list = []
     for pth in image_pth_list:
-        img_pil = Image.open(os.path.join(root, pth))
+        img_pil = Image.open(pth)
 
         if img_pil.width >= w:
             aspect_ratio = img_pil.height / img_pil.width
@@ -76,9 +76,8 @@ def input_tags_to_list(input_tags_string):
     return comma_sepatered_tags_list
 
 class QuizApp(tk.Tk):
-    def __init__(self, file_path_list, root):
+    def __init__(self, file_path_list):
         tk.Tk.__init__(self)
-        self.root = root
         self.file_path_list = file_path_list
         self.configs_tk = {'font': 'Helvetica 12',
                            'font_i': 'Helvetica 12 italic',
@@ -177,7 +176,7 @@ class QuizApp(tk.Tk):
         if len(self.questions[self.current_question_index].image_id) != 0:
 
             if len(self.questions[self.current_question_index].image_id) == 1:
-                image_pil = scale_image(self.questions[self.current_question_index].image_id, root=root)[0]
+                image_pil = scale_image(self.questions[self.current_question_index].image_id)[0]
                 image_tk = ImageTk.PhotoImage(image_pil)
                 self.image_label = tk.Label(self.image_container, image=image_tk)
                 self.image_label.image = image_tk
@@ -185,7 +184,7 @@ class QuizApp(tk.Tk):
             else:
                 self.img_index = 0
 
-                self.list_pil = scale_image(self.questions[self.current_question_index].image_id, root=root)
+                self.list_pil = scale_image(self.questions[self.current_question_index].image_id)
                 image_tk = ImageTk.PhotoImage(self.list_pil[self.img_index])
                 self.image_label = tk.Label(self.image_container, image=image_tk)
                 self.image_label.image = image_tk
@@ -459,7 +458,7 @@ class QuizApp(tk.Tk):
 
             completed_questions = []
             for pth in included_paths:
-                file_json = open(os.path.join(self.root, pth))
+                file_json = open(pth)
                 try:
                     file_dict = json.load(file_json)
                 except:
@@ -472,7 +471,7 @@ class QuizApp(tk.Tk):
 
             for r in completed_questions:
                 r.completion_status = 0
-                r.modify_json(self.root)
+                r.modify_json()
 
     def on_check(self):
         included_year_tags = []
@@ -498,7 +497,7 @@ class QuizApp(tk.Tk):
         self.filter_tags = input_tags_to_list(self.tag_input.get("1.0", 'end-1c'))
 
         for pth in included_paths:
-            file_json = open(os.path.join(self.root, pth))
+            file_json = open(pth)
             try:
                 file_dict = json.load(file_json)
             except:
@@ -544,7 +543,7 @@ class QuizApp(tk.Tk):
             self.filter_tags = input_tags_to_list(self.tag_input.get("1.0", 'end-1c'))
 
             for pth in included_paths:
-                file_json = open(os.path.join(self.root, pth))
+                file_json = open(pth)
                 try:
                     file_dict = json.load(file_json)
                 except:
@@ -633,7 +632,7 @@ class QuizApp(tk.Tk):
                 self.correct_questions += 1
 
                 self.questions[self.current_question_index].completion_status = 1
-                self.questions[self.current_question_index].modify_json(self.root)
+                self.questions[self.current_question_index].modify_json()
 
             else:
                 self.feedback_text.configure(text='FEIL')
@@ -675,12 +674,12 @@ class QuizApp(tk.Tk):
 
 
 if __name__ == '__main__':
-    #root = sys._MEIPASS
     #pyinstaller main.spec
+    os.chdir(r"C:\Users\sigzh\PycharmProjects\random_quiz_medisin\lib")
 
-    root = '.'
+
     question_set_json_pths = ['2016 - IIAB - MD4030 - eksamen 2-2018-01-04.json', '2016 - IIID - MD4062 - eksamen 1-2016-05-23.json', '2016 - IIID - MD4062 - eksamen 2-2016-10-19 fasit FVO.json', '2017 - IID - MD4043 - eksamen 1-2017-05-16.json', '2018 - IAB - MD4011 - FVO med fasit eksamen 1-2018-05-16.json', '2018 - IAB kont - MD4011 - FVO med fasit -2018-08-14.json', '2018 - ICD - MD4020 - FVo med fasit eksamen 2-2018-06-01.json', '2018 - ICD kont - MD4020 - FVO med fasit -2018-08-14.json', '2018 - IIAB forskerlinje - MD4030- korrigert FVO med fasit - ny.json', '2018 - IIAB kont - MD4030 - FVO med fasit -2018-08-14.json', '2018 - IIC - MD4042 - FVO med fasit - eksamen 2-2018-12-13.json', '2018 - IIC - MD4042 -FVO med fasit, eksamen 1-2018-05-29.json', '2018 - IID - MD4043 - FVO med fasit - Eksamen 3.-2018-12-13.json', '2018 - IID - MD4043 -FVO med fasit 1-2018-05-28.json', '2018 - IID kont - MD4043 - FVO med fasit.json', '2018 - IIIC - MD4061 - FVO med fasit - eksamen 1-2018-12-13.json', '2018 - IIIC kont - MD4061 - FVO med fasit.json', '2018 - IIID -Kont - MD4062 - FVO med fasit.json', '2018 - IIID ordinær - MD4062 - FVO med fasit.json', '2018 ordinær - IIAB - MD4030 -FVO med fasit eksamen 1-2018-05-24.json', '2019 - IAB kont - MD4011 - FVO med fasit.json', '2019 - IAB Ordinær- MD4011 - FVO med fasit.json', '2019 - ICD kont ny - MD4020 - Fvo med fasit.json', '2019 - ICD ordinær - MD4020 - FVO med fasit.json', '2019 - IIAB Forskerlinje - MD4030 - FVO med fasit - eksamen 3-2019-04-30.json', '2019 - IIAB kont - MD4030 - FVO med fasit.json', '2019 - IIAB ordinær - MD4030 - FVO med fasit.json', '2019 - IIC kont - MD4042 - Fvo med fasit.json', '2019 - IIC Ordinær - MD4042 - FVO med fasit.json', '2019 - IIC ordinær desember- MD4042 - FVO med fasit.json', '2019 - IID desember norsk- MD4043 - FVO med fasit.json', '2019 - IID kont - MD4043 - FVO med fasit.json', '2019 - IID ordinær - MD4043 - FVO med fasit.json', '2019 - IIIC ordinær - MD4061 -FVO med fasit.json', '2019 - IIIC utsatt februar - MD4061 - FVO med fasit.json', '2019 - IIID - ordinær - MD4062 - FVO med fasit.json', '2020 - IAB -ordinær - MD4011 - FVO med fasit.json', '2020 - IAB utsatt - MD4011 - FVO med fasit.json', '2020 - ICD ordinær - MD4020 - FVO med fasit.json', '2020 - ICD utsatt - MD4020 - FVO med fasit.json', '2020 - IIAB ordinær - MD4030 - FVO med fasit.json', '2020 - IIAB utsatt - MD4030 - FVO med fasit.json', '2020 - IIC - ordinær - MD4042 - FVO med fasit.json', '2020 - IIC ordinær desember - MD4042 - FVO med fasit.json', '2020 - IID - ordinær - MD4043 - FVO med fasit.json', '2020 - IID ordinær desember - MD4043 - FVO med fasit.json', '2020 - IIIC ordinær - MD4061 - FVO med fasit.json', '2020 - IIID -ordinær MD4062 - FVO med fasit.json', '2020 - IIID kont - MD4062 - FVO med begrunnelse.json', '2020 januar - IIAB forskerlinje- MD4030 - FVO med fasit.json', '2021 - IAB kont - MD4011 - FVO med fasit.json', '2021 - IAB ordinær - MD4011 - FVO med fasit.json', '2021 - ICD kont - MD4020 - FVO med fasit.json', '2021 - ICD ordinær - MD4020 - FVO med fasit.json', '2021 - IIAB forskerlinje ordinær - MD4030 - FVO med fasit.json', '2021 - IIAB kont - MD4030 - FVO med fasit.json', '2021 - IIAB ordinær - MD4030 - FVO med fasit.json', '2021 - IIC ordinær desember - MD4042 - FVO med fasit.json', '2021 - IIC ordinær vår - MD4042 - FVO med fasit.json', '2021 - IID kont vår - MD4043 - FVO med fasit.json', '2021 - IID ordinær desember - MD4043 -FVO med fasit.json', '2021 - IID ordinær vår - MD4043 - FVO med fasit.json', '2021 - IIIC ordinær - MD4061 - FVO med fasit.json', '2022 - IAB ordinær - MD4011 - FVO med fasit.json', '2022 - ICD ordinær - MD4020 - FVO med fasit.json', '2022 - IIAB ordinær forskerlinje - MD4030 - FVO med fasit.json', 'Fasit 2017 - IIC - MD4042 - eksamen 1-2017-05-16.json', 'Fasit FVO IIC MD4042 2017 konte 08.json', 'Fasit FVO MD4043 IID 2017 konte 08.json', 'Fasit IAB MD4011 2017 konte08.json', 'Fasit IAB MD4011 vår 2017.json', 'Fasit ICD MD4020 vår 2017.json', 'Fasit IIAB MD4030 vår 2017.json', 'Fasit MCQ ICD MD4020 2017 konte 08.json', 'Fasit MD4062-2017-05-15.json', 'HØST 2017 - IIC med fasit - MD4042 - eksamen 1-2017-12-11.json', 'HØST 2017 - IID med fasit- MD4043 - eksamen 1-2017-12-14.json', 'HØST 2017 - IIIC med fasit - MD4061 - eksamen 1-2017-12-18.json', 'Nasjonal delprøve i medisin høst 2020 - Revidert oppgavesett med fasitsvar bokmål.json', 'Nasjonal delprøve i medisin vår 2017 - Revidert fasit etter sensur.json', 'Nasjonal delprøve i medisin vår 2018 - Revidert fasit etter sensur.json', 'Nasjonal delprøve i medisin vår 2019 - Revidert fasit etter sensur.json', 'Nasjonal delprøve i medisin vår 2020 - Revidert fasit etter sensur.json', 'Nasjonal felles avsluttende skriftlig deleksamen i medisin høst 2021 - Revidert fasit etter sensur bokmål.json', 'Nasjonal felles avsluttende skriftlig deleksamen i medisin vår 2021 - Revidert fasit etter sensur bokmål.json', 'Revidert fasit - Nasjonal felles avsluttende skriftlig deleksamen i medisin høst 2022 bokmål.json', 'Revidert-fasit - Nasjonal felles avsluttende skriftlig deleksamen i medisin vår 2022 - Bokmål.json', 'Nasjonal fasit v22.json']
-    app = QuizApp(question_set_json_pths, root)
+    app = QuizApp(question_set_json_pths)
     app.tkraise()
     app.mainloop()
 
