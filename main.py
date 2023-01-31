@@ -71,7 +71,7 @@ def check_tag_in_string(question, comma_sepatered_tags_list):
 
 def input_tags_to_list(input_tags_string):
     comma_sepatered_tags_list = input_tags_string.split(',')
-    comma_sepatered_tags_list = [i.strip(' ') for i in comma_sepatered_tags_list]
+    #comma_sepatered_tags_list = [i.strip(' ') for i in comma_sepatered_tags_list]
 
     return comma_sepatered_tags_list
 
