@@ -20,12 +20,12 @@ class MCQ:
     def modify_json(self):
         file_pth = f'{self.question_set}.json'
 
-        with open(file_pth, "r") as file_json:
+        with open(file_pth, "r", encoding="utf8") as file_json:
             file_dict_temp = json.load(file_json)
 
         file_dict_temp[f'{self.question_set}_{self.question_number}']['completion_status'] = self.completion_status
 
-        with open(file_pth, "w") as file_json:
+        with open(file_pth, "w", encoding="utf8") as file_json:
             json.dump(file_dict_temp, file_json)
 
 
