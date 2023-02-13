@@ -137,6 +137,7 @@ def textToJson(text_pth):
                 else:
                     choice, choice_text = no_newline.split(' ', 1)
 
+                choice_text = choice_text.lstrip()
                 temp_text = choice_text
                 last_line = 'choice_text'
 
@@ -149,6 +150,7 @@ def textToJson(text_pth):
                 else:
                     choice, choice_text = no_newline.split(' ', 1)
 
+                choice_text = choice_text.lstrip()
                 temp_text = choice_text
                 last_line = 'choice_text'
 
@@ -161,6 +163,7 @@ def textToJson(text_pth):
                 else:
                     choice, choice_text = no_newline.split(' ', 1)
 
+                choice_text = choice_text.lstrip()
                 temp_text = choice_text
                 last_line = 'choice_text'
 
@@ -216,6 +219,7 @@ if __name__ == '__main__':
             file_pdfs.append(os.path.join(dirName, fname))
             #print(os.path.join(dirName, fname, fname))
 
+    #print(len(file_pdfs))
     for pdf in file_pdfs:
         #pdfExtractorToHTML(pdf) #comment out after fixing txt files because of outliers
         pdf_name = os.path.basename(pdf).rsplit(".", 1)[0]
