@@ -4,6 +4,7 @@ class Question:
         self.question_set = None
         self.question_number = None
         self.question_text = None
+        self.psyko_text = ''
         self.image_id = []
         self.abcd = dict()
         self.answer_tag = None
@@ -17,6 +18,9 @@ class Question:
 
     def set_question_text(self, string):
         self.question_text = string
+
+    def set_psyko_text(self, string):
+        self.psyko_text = string
 
     def add_image_id(self, string):
         self.image_id.append(string)
@@ -35,6 +39,13 @@ class Question:
             self.abcd[tag] = dict()
             self.abcd[tag]['explaination'] = explaination_string
 
+    def set_psyko(self, tag, psyko_string):
+        try:
+            self.abcd[tag]['psyko'] = psyko_string
+        except:
+            self.abcd[tag] = dict()
+            self.abcd[tag]['psyko'] = psyko_string
+
     def set_answer_tag(self, string):
         self.answer_tag = string
 
@@ -43,6 +54,7 @@ class Question:
         out_dict['question_set'] = self.question_set
         out_dict['question_number'] = self.question_number
         out_dict['question_text'] = self.question_text
+        out_dict['psyko_text'] = self.psyko_text
         out_dict['image_id'] = self.image_id
         out_dict['abcd'] = self.abcd
         out_dict['answer_tag'] = self.answer_tag
@@ -62,4 +74,10 @@ class Question:
                 print(self.abcd[key]['explaination'])
             except:
                 print('No explaination')
+
+            try:
+                print(self.abcd[key]['psyko'])
+            except:
+                print('No psyko')
+
         print('Correct answer:', self.answer_tag, '\n')

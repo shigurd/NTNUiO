@@ -16,6 +16,7 @@ class MCQ:
         self.abcd = question_dict['abcd']
         self.answer_tag = question_dict['answer_tag']
         self.completion_status = question_dict['completion_status']
+        self.psyko_text = question_dict['psyko_text']
 
     def modify_json(self):
         file_pth = f'{self.question_set}.json'
@@ -56,6 +57,8 @@ def scale_image(image_pth_list, h=800, w=760):
 
 def check_tag_in_string(question, comma_sepatered_tags_list):
     question_string = question.question_text
+    #print(question.question_set)
+    #print(question.question_number)
     for choice_key in question.abcd:
         question_string += ' ' + question.abcd[choice_key]['answer']
 
@@ -164,6 +167,10 @@ class QuizApp(tk.Tk):
         question_id = tk.Label(self.text_container, text=title, font=self.configs_tk['font_i'], justify='left', wraplength=self.configs_tk['w_length'], pady=10)
         question_id.pack(anchor='w')
 
+        self.psyko_text_label = tk.Label(self.text_container, text='',
+                                      font=self.configs_tk['font_b'], justify='left', wraplength=self.configs_tk['w_length'])
+        self.psyko_text_label.pack(anchor='w')
+
         text = self.questions[self.current_question_index].question_text
         question_text = tk.Label(self.text_container, text=text,
                                       font=self.configs_tk['font'], justify='left', wraplength=self.configs_tk['w_length'])
@@ -214,6 +221,8 @@ class QuizApp(tk.Tk):
 
         self.choice_explainations = []
         self.choice_explaination_contents = []
+        self.psyko_explainations = []
+        self.psyko_explaination_contents = []
 
         self.choice_var.set('0')
         for choice in self.questions[self.current_question_index].abcd:
@@ -226,10 +235,18 @@ class QuizApp(tk.Tk):
             except:
                 explaination = f'{choice}: Ingen forklaring'
 
+            try:
+                psyko = f'{choice}: {self.questions[self.current_question_index].abcd[choice]["psyko"]}'
+            except:
+                psyko = f''
             choice_explanation = tk.Label(self.choice_container, text='', font=self.configs_tk['font'], justify='left', wraplength=self.configs_tk['w_length'])
             choice_explanation.pack(anchor='w')
+            psyko_explanation = tk.Label(self.choice_container, text='', font=self.configs_tk['font_b'], justify='left', wraplength=self.configs_tk['w_length'])
+            psyko_explanation.pack(anchor='w')
             self.choice_explaination_contents.append(explaination)
             self.choice_explainations.append(choice_explanation)
+            self.psyko_explaination_contents.append(psyko)
+            self.psyko_explainations.append(psyko_explanation)
 
 
     def create_frame_quiz(self):
@@ -627,22 +644,30 @@ class QuizApp(tk.Tk):
     def on_submit(self):
         if self.choice_var.get() != '0':
 
-            if self.choice_var.get() == self.questions[self.current_question_index].answer_tag:
-                self.feedback_text.configure(text='RIKTIG')
-                self.correct_questions += 1
+            if self.questions[self.current_question_index].psyko_text != '':
+                self.psyko_text_label.configure(text=self.questions[self.current_question_index].psyko_text, fg=self.configs_tk['color_red'])
+                self.feedback_text.configure(text='PSYKOMETRI')
 
                 self.questions[self.current_question_index].completion_status = 1
                 self.questions[self.current_question_index].modify_json()
-
             else:
-                self.feedback_text.configure(text='FEIL')
+                if self.choice_var.get() == self.questions[self.current_question_index].answer_tag:
+                    self.feedback_text.configure(text='RIKTIG')
+                    self.correct_questions += 1
 
-            for ce in zip(self.choice_explainations, self.choice_explaination_contents):
+                    self.questions[self.current_question_index].completion_status = 1
+                    self.questions[self.current_question_index].modify_json()
+                else:
+                    self.feedback_text.configure(text='FEIL')
+
+            for ce in zip(self.choice_explainations, self.choice_explaination_contents, self.psyko_explainations, self.psyko_explaination_contents):
                 ce[0].configure(text=ce[1])
+                ce[2].configure(text=ce[3])
                 if ce[1].strip(' ')[0] == self.questions[self.current_question_index].answer_tag:
                     ce[0].configure(bg=self.configs_tk['color_green'])
                 else:
                     ce[0].configure(bg=self.configs_tk['color_orange'])
+                ce[2].configure(fg=self.configs_tk['color_red'])
 
             self.submit_button.configure(text='NESTE', command=self.on_next, bg=self.configs_tk['color_green'])
 
