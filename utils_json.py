@@ -309,8 +309,8 @@ if __name__ == '__main__':
     #print(len(file_pdfs))
     for pdf in file_pdfs:
         #pdfExtractorToHTML(pdf) #comment out after fixing txt files because of outliers, makes txt files
-        pdf_name = os.path.basename(pdf).rsplit(".", 1)[0] #makes json
-        textToJsonImproved(f'{pdf_name}.txt')
+        pdf_name = os.path.basename(pdf).rsplit(".", 1)[0]
+        textToJsonImproved(f'{pdf_name}.txt') #makes json
 
         #printJson(f'{pdf.rsplit(".")[0]}.json')
 
