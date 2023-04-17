@@ -398,9 +398,9 @@ class QuizApp(tk.Tk):
                                 text='KILDER:', font=self.configs_tk['font_b'], justify='left',
                                 wraplength=self.configs_tk['w_length'])
         sources_text.pack(anchor='w')
-        sources_link = tk.Text(self.source_info_container, font=self.configs_tk['font'], height=3, borderwidth=0)
+        sources_link = tk.Text(self.source_info_container, font=self.configs_tk['font'], height=4, borderwidth=0)
         sources_link.insert(1.0,
-                    'https://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/felles-avsluttende-deleksamen/\nhttps://i.ntnu.no/wiki/-/wiki/Norsk/Eksamensoppgaver+-+Medisin+-+MH\nhttps://github.com/shigurd/NTNUiO.git')
+                    'https://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/felles-avsluttende-deleksamen/\nhttps://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/fagproven/\nhttps://i.ntnu.no/wiki/-/wiki/Norsk/Eksamensoppgaver+-+Medisin+-+MH\nhttps://github.com/shigurd/NTNUiO.git')
         sources_link.configure(state='disabled')
         sources_link.pack(anchor='w')
 
