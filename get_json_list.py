@@ -23,5 +23,5 @@ def get_json_and_image_list(input_dir, out_text):
 
 if __name__ =='__main__':
     input_dir = 'lib'
-    #get_json_list(input_dir, 'json_list.txt')
+    get_json_list(input_dir, 'json_list.txt')
     get_json_and_image_list(input_dir, 'pyinstaller_list.txt')

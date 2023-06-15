@@ -167,7 +167,7 @@ def textToJsonImproved(text_pth):
 
     with io.open(text_pth, 'r', encoding='utf-8', errors='replace') as obj:
         lines = obj.readlines()
-        last_line = None
+        last_line = 'end'
         temp_question = None
         temp_text = ''
 
@@ -175,7 +175,7 @@ def textToJsonImproved(text_pth):
             no_newline = line.replace('\n', '')
             no_newline_strip = no_newline.strip(' ')
             if no_newline_strip != '':
-                if no_newline_strip == f'{count}':
+                if no_newline_strip == f'{count}' and last_line == 'end':
                     temp_question = Question()
                     temp_question.set_question_set(file_name)
                     temp_question.set_question_number(count)
@@ -294,11 +294,11 @@ def printJson(json_pth):
         print(file_dict[q])
 
 if __name__ == '__main__':
-    #pdf = 'Nasjonal felles avsluttende skriftlig deleksamen i medisin høst 2021 - Revidert fasit etter sensur bokmål.pdf'
+    #pdf = 'MFFAGPR - Fagprøven for leger utdannet utenfor EU EØS og Sveits Vår 2023 revidert fasit.pdf'
     #pdfExtractorToHTML(pdf)
     #textToJsonImproved(f'{pdf.rsplit(".")[0]}.txt')
 
-    folder_pth = 'alle_fasiter'
+    folder_pth = 'nye_fasiter'
     file_pdfs = []
 
     for dirName, subdirList, fileList in os.walk(folder_pth):
@@ -308,10 +308,9 @@ if __name__ == '__main__':
 
     #print(len(file_pdfs))
     for pdf in file_pdfs:
-        #pdfExtractorToHTML(pdf) #comment out after fixing txt files because of outliers, makes txt files
+        pdfExtractorToHTML(pdf) #comment out after fixing txt files because of outliers, makes txt files
         pdf_name = os.path.basename(pdf).rsplit(".", 1)[0]
         textToJsonImproved(f'{pdf_name}.txt') #makes json
 
         #printJson(f'{pdf.rsplit(".")[0]}.json')
-
 
