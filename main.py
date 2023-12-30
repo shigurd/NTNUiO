@@ -1224,7 +1224,7 @@ class QuizApp(tk.Tk):
         box_label_info_button.menu = tk.Menu(box_label_info_button, tearoff=0)
         box_label_info_button["menu"] = box_label_info_button.menu
         box_label_info_button.menu.add_cascade(
-            label='Valg av spesifikke eksamensett. Kun 1 eksamensett kan velges om gangen. Fullførte eksamensett markeres i grønt')
+            label='Valg av spesifikke eksamensett. Kun 1 eksamensett kan velges om gangen. Fullførte eksamensett markeres i grønt, men kan gjøres på nytt om ønskelig')
         for i in self.category_info_list:
             box_label_info_button.menu.add_cascade(label=i)
 
@@ -2617,6 +2617,7 @@ class QuizApp(tk.Tk):
         self.create_sources_frame()
 
 if __name__ == '__main__':
+    #activate pip_only
     #pyinstaller main.spec
     os.chdir(os.path.join(os.path.dirname(sys.argv[0]), 'lib'))
 
