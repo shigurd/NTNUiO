@@ -57,14 +57,14 @@ class Statistics:
         if os.path.isfile(json_path) == False:
             with open(json_path, "w", encoding="utf8") as outfile:
                 normal_mode = {'Total fullføringsgrad': '0.0% (0 av 0 oppgaver)'}
-                exam_mode = {'Total fullføringsgrad': '0.0% (0 av 0 eksamensett)'}
+                exam_mode = {'Total fullføringsgrad': '0.0% (0 av 0 eksamenssett)'}
                 for c in category_list:
                     normal_mode[f'{c} fullføringsgrad'] = '0.0% (0 av 0 oppgaver)'
-                    exam_mode[f'{c} fullføringsgrad'] = '0.0% (0 av 0 eksamensett)'
+                    exam_mode[f'{c} fullføringsgrad'] = '0.0% (0 av 0 eksamenssett)'
 
-                exam_mode['Beste eksamensett'] = ''
+                exam_mode['Beste eksamenssett'] = ''
                 exam_mode['Beste eksamenscore'] = '0.0% (0 av 0 oppgaver)'
-                exam_mode['Leverte eksamensett'] = []
+                exam_mode['Leverte eksamenssett'] = []
 
                 doctor_mode = {'Beste tittel': 'Medisinstudent',
                                'Max antall riktige': 0,
@@ -328,7 +328,7 @@ class QuizApp(tk.Tk):
         normal_info_button.menu.add_cascade(
             label="Oppsett - Riktig svar og forklaringer vises etter hver besvarte oppgave")
         normal_info_button.menu.add_cascade(
-            label="Valgmuligheter - Spesifikke emner, spesifikke årganger, kombinasjon av eksamensett og skjuling av svaralternativer")
+            label="Valgmuligheter - Spesifikke emner, spesifikke årganger, kombinasjon av eksamenssett og skjuling av svaralternativer")
 
         exam_button = tk.Button(self.intro_buttons_container, text="EKSAMENSMODUS", font=self.configs_tk['font_b'],
                                 bg=self.configs_tk['color_green'], height=2, width=30, command=lambda: self.create_exam_menu_from_intro())
@@ -344,7 +344,7 @@ class QuizApp(tk.Tk):
         exam_info_button.menu.add_cascade(
             label="Oppsett - Alle oppgaver må besvares før riktig svar og forklaringer vises")
         exam_info_button.menu.add_cascade(
-            label="Valgmuligheter - Spesifikke eksamensett og eksamenstid")
+            label="Valgmuligheter - Spesifikke eksamenssett og eksamenstid")
 
         doctor_button = tk.Button(self.intro_buttons_container, text="OVERLEGEMODUS", font=self.configs_tk['font_b'],
                                 bg=self.configs_tk['color_green'], height=2, width=30, command=lambda: self.create_doctor_menu_from_intro())
@@ -455,7 +455,7 @@ class QuizApp(tk.Tk):
         box_label_info_button.menu.add_cascade(
             label='Nasjonal og MFFAGPR har høst- og våreksamen, mens NTNU-settene har ordinær- og konteeksamen')
         box_label_info_button.menu.add_cascade(
-            label='Vanligvis vil det være 0-2 eksamensett for hver årgang, men dette kan være varierende')
+            label='Vanligvis vil det være 0-2 eksamenssett for hver årgang, men dette kan være varierende')
 
         for y in self.normal_year_list:
             self.normal_check_label_year_vars.append(tk.IntVar())
@@ -526,8 +526,8 @@ class QuizApp(tk.Tk):
         box_label_info_button["menu"] = box_label_info_button.menu
         box_label_info_button.menu.add_cascade(
             label='Valg av oppgaverekkefølge for eksamensutvalget')
-        box_label_info_button.menu.add_cascade(label='Kronologisk - Oppgavene kommer i rekkefølgen til de originale eksamensettene')
-        box_label_info_button.menu.add_cascade(label='Tilfeldig - Oppgavene i de ulike eksamensettene blandes og kommer i tilfeldig rekkefølge')
+        box_label_info_button.menu.add_cascade(label='Kronologisk - Oppgavene kommer i rekkefølgen til de originale eksamenssettene')
+        box_label_info_button.menu.add_cascade(label='Tilfeldig - Oppgavene i de ulike eksamenssettene blandes og kommer i tilfeldig rekkefølge')
 
         self.normal_order_mode_var.set('0')
         for r in self.normal_order_mode_list:
@@ -834,7 +834,7 @@ class QuizApp(tk.Tk):
         self.text_container = tk.Frame(frame)
         self.text_container.pack(anchor='w')
 
-        title = f'Eksamensett: {self.questions[self.current_question_index].question_set}\nOppgave: {self.questions[self.current_question_index].question_number}'
+        title = f'Eksamenssett: {self.questions[self.current_question_index].question_set}\nOppgave: {self.questions[self.current_question_index].question_number}'
         question_id = tk.Label(self.text_container, text=title, font=self.configs_tk['font_i'], justify='left', wraplength=self.configs_tk['w_length'], pady=10)
         question_id.pack(anchor='w')
 
@@ -1197,9 +1197,9 @@ class QuizApp(tk.Tk):
         box_label_info_button.menu = tk.Menu(box_label_info_button, tearoff=0)
         box_label_info_button["menu"] = box_label_info_button.menu
         box_label_info_button.menu.add_cascade(
-            label='Skriv inn ønskede stikkord for å filtrere de underliggende eksamensettene')
+            label='Skriv inn ønskede stikkord for å filtrere de underliggende eksamenssettene')
         box_label_info_button.menu.add_cascade(
-            label='Angitte stikkord søkes for i tittelen på eksamensettene. Ved tomt filter viser underliggende liste alle eksamensett')
+            label='Angitte stikkord søkes for i tittelen på eksamenssettene. Ved tomt filter viser underliggende liste alle eksamenssett')
         box_label_info_button.menu.add_cascade(
             label='Dersom flere stikkord er ønskelig, brukes "," for å skille stikkordene (dvs komma uten hermetegnene)')
         box_label_info_button.menu.add_cascade(
@@ -1224,7 +1224,7 @@ class QuizApp(tk.Tk):
         box_label_info_button.menu = tk.Menu(box_label_info_button, tearoff=0)
         box_label_info_button["menu"] = box_label_info_button.menu
         box_label_info_button.menu.add_cascade(
-            label='Valg av spesifikke eksamensett. Kun 1 eksamensett kan velges om gangen. Fullførte eksamensett markeres i grønt, men kan gjøres på nytt om ønskelig')
+            label='Valg av spesifikke eksamenssett. Kun 1 eksamenssett kan velges om gangen. Fullførte eksamenssett markeres i grønt, men kan gjøres på nytt om ønskelig')
         for i in self.category_info_list:
             box_label_info_button.menu.add_cascade(label=i)
 
@@ -1234,7 +1234,7 @@ class QuizApp(tk.Tk):
         self.exam_listbox = tk.Listbox(listbox_subcontainer, font=self.configs_tk['font'], width=78, height=7, selectmode='SINGLE')
         for i, r in enumerate(self.file_path_list):
             self.exam_listbox.insert(i + 1, r.rsplit('.', 1)[0])
-            if r.rsplit('.', 1)[0] in self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Leverte eksamensett']:
+            if r.rsplit('.', 1)[0] in self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Leverte eksamenssett']:
                 self.exam_listbox.itemconfig(i, {'bg': self.configs_tk['color_green']})
         self.exam_listbox.pack(anchor='w', side='left', fill='both')
 
@@ -1261,7 +1261,7 @@ class QuizApp(tk.Tk):
         box_label_info_button.menu = tk.Menu(box_label_info_button, tearoff=0)
         box_label_info_button["menu"] = box_label_info_button.menu
         box_label_info_button.menu.add_cascade(
-            label='Valg av eksamenstid for eksamensettet. Ordinær tid for Nasjonal deleksamen er 4 timer')
+            label='Valg av eksamenstid for eksamenssettet. Ordinær tid for Nasjonal deleksamen er 4 timer')
         box_label_info_button.menu.add_cascade(label='Dersom egendefinert eksamenstid velges, må dette ligge mellom 0-300 min (0-5 timer)')
 
         self.exam_time_mode_var.set('0')
@@ -1288,13 +1288,13 @@ class QuizApp(tk.Tk):
         box_label_info_button.pack(anchor='w')
         box_label_info_button.menu = tk.Menu(box_label_info_button, tearoff=0)
         box_label_info_button["menu"] = box_label_info_button.menu
-        box_label_info_button.menu.add_cascade(label='Oversikt over valg av eksamensett og eksamenstid før "Start"')
-        box_label_info_button.menu.add_cascade(label='Oppgaver man er usikre på i eksamensettet kan flagges som på Nasjonal deleksamen')
+        box_label_info_button.menu.add_cascade(label='Oversikt over valg av eksamenssett og eksamenstid før "Start"')
+        box_label_info_button.menu.add_cascade(label='Oppgaver man er usikre på i eksamenssettet kan flagges som på Nasjonal deleksamen')
         box_label_info_button.menu.add_cascade(label='Alle oppgaver bør besvares før man trykker på "Lever eksamen". Dersom tiden går ut, leveres eksamen automatisk')
         box_label_info_button.menu.add_cascade(label='Beregnet eksamenscore er justert i henhold til psykometrien. Oppgaver fargekodes etter riktig/galt/psykometri/ubesvart')
-        box_label_info_button.menu.add_cascade(label='Statistikk lagres når man trykker "Hjem" etter at eksamensett er levert')
+        box_label_info_button.menu.add_cascade(label='Statistikk lagres når man trykker "Hjem" etter at eksamenssett er levert')
 
-        self.exam_id_label = tk.Label(box_label, text=f'Eksamensett: ?',
+        self.exam_id_label = tk.Label(box_label, text=f'Eksamenssett: ?',
                                               font=self.configs_tk['font'], anchor='w', justify='left',
                                               wraplength=self.configs_tk['w_length_menu'])
         self.exam_id_label.pack(anchor='w')
@@ -1593,7 +1593,7 @@ class QuizApp(tk.Tk):
 
         for i, r in enumerate(filtered_listbox_file):
             self.exam_listbox.insert(i + 1, r.rsplit('.', 1)[0])
-            if r.rsplit('.', 1)[0] in self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Leverte eksamensett']:
+            if r.rsplit('.', 1)[0] in self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Leverte eksamenssett']:
                 self.exam_listbox.itemconfig(i, {'bg': self.configs_tk['color_green']})
 
     def on_start_exam(self):
@@ -1646,10 +1646,10 @@ class QuizApp(tk.Tk):
                 print(file_json_pth)
 
             self.questions = included_questions
-            self.exam_id_label.configure(text=f'Eksamensett: {self.exam_choice.get()}')
+            self.exam_id_label.configure(text=f'Eksamenssett: {self.exam_choice.get()}')
             self.exam_questions_number_label.configure(text=f'Antall oppgaver: {len(self.questions)}')
         else:
-            self.exam_id_label.configure(text=f'Eksamensett: ?')
+            self.exam_id_label.configure(text=f'Eksamenssett: ?')
             self.exam_questions_number_label.configure(text=f'Antall oppgaver: ?')
 
         if self.exam_time_mode_var.get() != '0':
@@ -1755,9 +1755,9 @@ class QuizApp(tk.Tk):
                 self.exam_submit_button.configure(state='disabled')
 
     def update_statistics_exam(self):
-        if self.exam_choice.get() not in self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamensett"]:
-            self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamensett"].append(self.exam_choice.get())
-        self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Total fullføringsgrad'] = f'{round(len(self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamensett"]) * 100 / len(self.file_path_list), 1)}% ({len(self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamensett"])} av {len(self.file_path_list)} eksamensett)'
+        if self.exam_choice.get() not in self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamenssett"]:
+            self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamenssett"].append(self.exam_choice.get())
+        self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Total fullføringsgrad'] = f'{round(len(self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamenssett"]) * 100 / len(self.file_path_list), 1)}% ({len(self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamenssett"])} av {len(self.file_path_list)} eksamenssett)'
 
         for c in self.normal_category_list:
             category_total_exams = 0
@@ -1769,18 +1769,18 @@ class QuizApp(tk.Tk):
                     try:
                         file_dict = json.load(file_json)
                         category_total_exams += 1
-                        if pth.rsplit('.', 1)[0] in self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamensett"]:
+                        if pth.rsplit('.', 1)[0] in self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamenssett"]:
                             category_completed_exams += 1
                     except:
                         print(file_json)
 
-            self.statistics_obj.statistics_dict['EKSAMENSMODUS'][f'{c} fullføringsgrad'] = f'{round(category_completed_exams * 100 / category_total_exams, 1)}% ({category_completed_exams} av {category_total_exams} eksamensett)'
+            self.statistics_obj.statistics_dict['EKSAMENSMODUS'][f'{c} fullføringsgrad'] = f'{round(category_completed_exams * 100 / category_total_exams, 1)}% ({category_completed_exams} av {category_total_exams} eksamenssett)'
 
         if float(self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Beste eksamenscore'].split('%', 1)[0]) < (self.exam_results_correct * 100 / self.exam_results_total_after_psyko):
-            self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Beste eksamensett'] = self.exam_choice.get()
+            self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Beste eksamenssett'] = self.exam_choice.get()
             self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Beste eksamenscore'] = f'{round((self.exam_results_correct * 100 / self.exam_results_total_after_psyko), 1)}% ({self.exam_results_correct} av {self.exam_results_total_after_psyko} oppgaver)'
-        elif self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Beste eksamensett'] == '':
-            self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Beste eksamensett'] = self.exam_choice.get()
+        elif self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Beste eksamenssett'] == '':
+            self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Beste eksamenssett'] = self.exam_choice.get()
             self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Beste eksamenscore'] = f'{round((self.exam_results_correct * 100 / self.exam_results_total_after_psyko), 1)}% ({self.exam_results_correct} av {self.exam_results_total_after_psyko} oppgaver)'
 
         self.statistics_obj.write_dict_to_json()
@@ -2512,7 +2512,7 @@ class QuizApp(tk.Tk):
                                     wraplength=self.configs_tk['w_length'])
         exam_title_label.pack(anchor='w')
         for q in self.statistics_obj.statistics_dict['EKSAMENSMODUS']:
-            if q == 'Leverte eksamensett':
+            if q == 'Leverte eksamenssett':
                 pass
             else:
                 exam_text_label = tk.Label(exam_statistics_container,
@@ -2601,9 +2601,9 @@ class QuizApp(tk.Tk):
         self.create_subtitle_info_container(self.sources_frame, 'INFO OG KILDER')
 
         self.create_about_info_container(self.sources_frame, 'OM PROGRAMMET',
-                                         '''Programmet har enkelte begrensninger man bør være klar over.\n• Enkelte oppgaver har feil i fasit/endringer etter psykometrimøtet. I programmet gis det poeng for riktig(e) svaralternativ etter psykometrimøtet. Les psykometrinotat for begrunnelsen bak fasitendring da dette ikke vises i programmet.\n• Enkelte oppgaver vil inneholde tabeller. I programmet fremvises tabeller som tekst. Feks vil følgende tabell: \n-------------------------------------------------------------\n|    A (prøve)    |    B (verdi)    |  C (referanse)  |\n-------------------------------------------------------------\n|           D          |          1           |            2            |\n-------------------------------------------------------------\n|           E          |          3           |            4            |\n-------------------------------------------------------------\nvises som "A B C D 1 2 E 3 4" i oppgaveteksten.\n• Enkelte oppgaver inneholder små tall som feks "10 opphøyd i 5" i kontekst av bakterievekst. Små tall vil vises som normale tall i programmet (forrige eksempel vil da vises som "105").\n• Programmet er ikke tilkoblet internett så programmet må lastes ned på nytt for oppdateringer. Merk at tidligere progresjon og statistikk vil forsvinne ved bruk av ny versjon. Sjekk datering på versjon og dato på zip-filen for å se om du har siste utgave.\n• Bugs vil forekomme for enkelte oppgaver grunnet uforutsette variasjoner i oppgaveformat. Dette skjer sjeldent, men eksamensett og oppgavenummer er oppgitt for hver oppgave slik at fasiten kan sjekkes manuelt ved usikkerhet.''')
+                                         '''Programmet har enkelte begrensninger man bør være klar over.\n• Enkelte oppgaver har feil i fasit/endringer etter psykometrimøtet. I programmet gis det poeng for riktig(e) svaralternativ etter psykometrimøtet. Les psykometrinotat for begrunnelsen bak fasitendring da dette ikke vises i programmet.\n• Enkelte oppgaver vil inneholde tabeller. I programmet fremvises tabeller som tekst. Feks vil følgende tabell: \n-------------------------------------------------------------\n|    A (prøve)    |    B (verdi)    |  C (referanse)  |\n-------------------------------------------------------------\n|           D          |          1           |            2            |\n-------------------------------------------------------------\n|           E          |          3           |            4            |\n-------------------------------------------------------------\nvises som "A B C D 1 2 E 3 4" i oppgaveteksten.\n• Enkelte oppgaver inneholder små tall som feks "10 opphøyd i 5" i kontekst av bakterievekst. Små tall vil vises som normale tall i programmet (forrige eksempel vil da vises som "105").\n• Programmet er ikke tilkoblet internett så programmet må lastes ned på nytt for oppdateringer. Merk at tidligere progresjon og statistikk vil forsvinne ved bruk av ny versjon. Sjekk datering på versjon og dato på zip-filen for å se om du har siste utgave.\n• Bugs vil forekomme for enkelte oppgaver grunnet uforutsette variasjoner i oppgaveformat. Dette skjer sjeldent, men eksamenssett og oppgavenummer er oppgitt for hver oppgave slik at fasiten kan sjekkes manuelt ved usikkerhet.''')
         self.create_about_info_container(self.sources_frame, 'OM MEG',
-                                         'Hei, jeg heter Sigurd Z. Zha og har vært medisin- og forskerlinjestudent ved UiO 2017-2024. Programmet ble laget fordi det var kjipt å gjøre eksamensett manuelt. Synes det var kult at mange på kull V18 fikk nytte av programmet, så har nå laget en oppdatert versjon med forbedringer. Er nå ferdig lege, men vedlikeholder programmet på fritiden. Disclaimer: Det er UiO, NTNU og eksamenskommisjonen som eier rettighetene til alle eksamensettene. Donasjoner kan gå til MedHum.\n\nTa gjerne kontakt med meg på Facebook eller på mail (sigzha@gmail.com) dersom det er noe du lurer på')
+                                         'Hei, jeg heter Sigurd Z. Zha og har vært medisin- og forskerlinjestudent ved UiO 2017-2024. Programmet ble laget fordi det var kjipt å gjøre eksamenssett manuelt. Synes det var kult at mange på kull V18 fikk nytte av programmet, så har nå laget en oppdatert versjon med forbedringer. Er nå ferdig lege, men vedlikeholder programmet på fritiden. Disclaimer: Det er UiO, NTNU og eksamenskommisjonen som eier rettighetene til alle eksamenssettene. Donasjoner kan gå til MedHum.\n\nTa gjerne kontakt med meg på Facebook eller på mail (sigzha@gmail.com) dersom det er noe du lurer på')
         self.create_link_info_container(self.sources_frame, 'EKSAMENSETT', [
             'https://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/felles-avsluttende-deleksamen/',
             'https://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/fagproven/',
