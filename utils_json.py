@@ -31,9 +31,9 @@ def organizeText(text_list):
     #print(new_text)
     return new_text
 
-def pdfExtractorToHTML(file_pdf):
+def pdfExtractorToHTML(file_pdf, with_img=True):
     doc = fitz.open(file_pdf)
-    image_num = 0
+    image_num = 1
     file_name = os.path.basename(file_pdf).rsplit(".", 1)[0]
 
     with open(f'{file_name}.txt', 'w', encoding='utf-8', errors='replace') as text_file:
@@ -56,7 +56,7 @@ def pdfExtractorToHTML(file_pdf):
                     pass
 
                 psyko_list = pimg_child.select('[style="font-family:Arial,serif;font-size:10.0pt;color:#ed1c24"]')
-                text_list = pimg_child.select('[style*="font-family:Arial,serif;font-size:10.0pt;color:#363639"]')
+                text_list = pimg_child.select('[style*="font-family:Arial,serif;font-size:10.0pt;color:#363639"], [style="font-family:Arial,serif;font-size:8.0pt;color:#363639"]')
                 answer_list = pimg_child.select('[style="font-family:Arial,serif;font-size:10.0pt;color:#0071a2"]')
                 end_list = pimg_child.select('[style="font-family:Arial,serif;font-size:3.0pt;color:#363639"]')
 
@@ -72,10 +72,11 @@ def pdfExtractorToHTML(file_pdf):
                     temp_psyko_line += psyko.get_text()
 
                 if img_64 != None:
-                    image = Image.open(BytesIO(base64.b64decode(img_64)))
                     image_name = f'{file_name}_image{image_num}.png'
+                    if with_img == True:
+                        image = Image.open(BytesIO(base64.b64decode(img_64)))
+                        image.save(image_name)
                     temp_text_line += f'[{image_name}]\n'
-                    image.save(image_name)
                     image_num += 1
 
                 if temp_text_line != '':
@@ -92,6 +93,29 @@ def pdfExtractorToHTML(file_pdf):
 
                 if end_list != []:
                     text_file.write(f'#end#\n')
+
+def pdfExtractorToHTMLTest(file_pdf):
+    doc = fitz.open(file_pdf)
+    image_num = 1
+    file_name = os.path.basename(file_pdf).rsplit(".", 1)[0]
+
+    for page_num in range(doc.page_count):
+        page = doc[page_num]
+        page_html = page.get_text('html')
+        soup = BeautifulSoup(page_html, 'html.parser')
+
+        n_p = soup.find('div')
+        p_children = n_p.findChildren(['p', 'img'], recursive=False)
+        for pimg_child in p_children:
+            temp_text_line = ''
+            temp_answer_line = '$'
+            temp_psyko_line = '¤'
+
+            img_64 = None
+            try:
+                img_64 = pimg_child['src'].split(',', 1)[-1]
+            except:
+                pass
 
 def pdfExtractorToHTMLprint(file_pdf):
     doc = fitz.open(file_pdf)
@@ -200,7 +224,7 @@ def textToJsonImproved(text_pth):
                         last_line = 'psyko_explaination_text'
 
                 elif no_newline_strip[0] == '[' and no_newline_strip[-1] == ']':
-                    if last_line == 'question_text':
+                    if last_line == 'question_text' or last_line == 'start':
                         temp_question.add_image_id(no_newline_strip[1:-1])
                         last_line = 'question_text'
 
@@ -293,24 +317,33 @@ def printJson(json_pth):
         print(q)
         print(file_dict[q])
 
-if __name__ == '__main__':
-    #pdf = 'MFFAGPR - Fagprøven for leger utdannet utenfor EU EØS og Sveits Vår 2023 revidert fasit.pdf'
-    #pdfExtractorToHTML(pdf)
-    #textToJsonImproved(f'{pdf.rsplit(".")[0]}.txt')
+def generateTxtAndJSON(pdf):
+    pdfExtractorToHTML(pdf) #comment out after fixing txt files because of outliers, makes txt files
+    pdf_name = os.path.basename(pdf).rsplit(".", 1)[0]
+    textToJsonImproved(f'{pdf_name}.txt') #makes json
+    # printJson(f'{pdf.rsplit(".")[0]}.json')
 
+def generateJSONFromTxt(pdf_name):
+    pdf_name = os.path.basename(pdf_name).rsplit(".", 1)[0]
+    textToJsonImproved(f'{pdf_name}.txt')  # makes json
+
+if __name__ == '__main__':
     folder_pth = 'nye_fasiter'
     file_pdfs = []
 
     for dirName, subdirList, fileList in os.walk(folder_pth):
         for fname in fileList:
             file_pdfs.append(os.path.join(dirName, fname))
-            #print(os.path.join(dirName, fname, fname))
+            print(os.path.join(dirName, fname))
 
     #print(len(file_pdfs))
     for pdf in file_pdfs:
-        pdfExtractorToHTML(pdf) #comment out after fixing txt files because of outliers, makes txt files
-        pdf_name = os.path.basename(pdf).rsplit(".", 1)[0]
-        textToJsonImproved(f'{pdf_name}.txt') #makes json
+        #pdfExtractorToHTMLTest(pdf)
+        #generateTxtAndJSON(pdf)
+        #pdfExtractorToHTML(pdf, with_img=True) # makes txt
+        generateJSONFromTxt(pdf)  # makes json
 
-        #printJson(f'{pdf.rsplit(".")[0]}.json')
+
+
+
 
