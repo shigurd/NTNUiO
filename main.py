@@ -478,7 +478,7 @@ class QuizApp(tk.Tk):
         normal_category_box_container = tk.Frame(self.normal_menu_checkbox_container)
         normal_category_box_container.grid(row=1, column=1, sticky='n')
 
-        box_label = tk.LabelFrame(normal_category_box_container, text='EKSAMENSETT', font=self.configs_tk['font_b'], padx=30, pady=20, height=419, width=198)
+        box_label = tk.LabelFrame(normal_category_box_container, text='EKSAMENSSETT', font=self.configs_tk['font_b'], padx=30, pady=20, height=419, width=198)
         box_label.pack()
         self.normal_category_check_label = []
         self.normal_category_check_label_vars = []
@@ -2604,7 +2604,7 @@ class QuizApp(tk.Tk):
                                          '''Programmet har enkelte begrensninger man bør være klar over.\n• Enkelte oppgaver har feil i fasit/endringer etter psykometrimøtet. I programmet gis det poeng for riktig(e) svaralternativ etter psykometrimøtet. Les psykometrinotat for begrunnelsen bak fasitendring da dette ikke vises i programmet.\n• Enkelte oppgaver vil inneholde tabeller. I programmet fremvises tabeller som tekst. Feks vil følgende tabell: \n-------------------------------------------------------------\n|    A (prøve)    |    B (verdi)    |  C (referanse)  |\n-------------------------------------------------------------\n|           D          |          1           |            2            |\n-------------------------------------------------------------\n|           E          |          3           |            4            |\n-------------------------------------------------------------\nvises som "A B C D 1 2 E 3 4" i oppgaveteksten.\n• Enkelte oppgaver inneholder små tall som feks "10 opphøyd i 5" i kontekst av bakterievekst. Små tall vil vises som normale tall i programmet (forrige eksempel vil da vises som "105").\n• Programmet er ikke tilkoblet internett så programmet må lastes ned på nytt for oppdateringer. Merk at tidligere progresjon og statistikk vil forsvinne ved bruk av ny versjon. Sjekk datering på versjon og dato på zip-filen for å se om du har siste utgave.\n• Bugs vil forekomme for enkelte oppgaver grunnet uforutsette variasjoner i oppgaveformat. Dette skjer sjeldent, men eksamenssett og oppgavenummer er oppgitt for hver oppgave slik at fasiten kan sjekkes manuelt ved usikkerhet.''')
         self.create_about_info_container(self.sources_frame, 'OM MEG',
                                          'Hei, jeg heter Sigurd Z. Zha og har vært medisin- og forskerlinjestudent ved UiO 2017-2024. Programmet ble laget fordi det var kjipt å gjøre eksamenssett manuelt. Synes det var kult at mange på kull V18 fikk nytte av programmet, så har nå laget en oppdatert versjon med forbedringer. Er nå ferdig lege, men vedlikeholder programmet på fritiden. Disclaimer: Det er UiO, NTNU og eksamenskommisjonen som eier rettighetene til alle eksamenssettene. Donasjoner kan gå til MedHum.\n\nTa gjerne kontakt med meg på Facebook eller på mail (sigzha@gmail.com) dersom det er noe du lurer på')
-        self.create_link_info_container(self.sources_frame, 'EKSAMENSETT', [
+        self.create_link_info_container(self.sources_frame, 'EKSAMENSSETT', [
             'https://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/felles-avsluttende-deleksamen/',
             'https://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/fagproven/',
             'https://i.ntnu.no/wiki/-/wiki/Norsk/Eksamensoppgaver+-+Medisin+-+MH'])
