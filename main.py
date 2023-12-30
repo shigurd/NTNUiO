@@ -56,19 +56,23 @@ class Statistics:
         self.statistics_dict = dict()
         if os.path.isfile(json_path) == False:
             with open(json_path, "w", encoding="utf8") as outfile:
-                normal_mode = {'Totale oppgaver fullføringsgrad': '0.0% (0 av 0)'}
+                normal_mode = {'Total fullføringsgrad': '0.0% (0 av 0 oppgaver)'}
+                exam_mode = {'Total fullføringsgrad': '0.0% (0 av 0 eksamensett)'}
                 for c in category_list:
-                    normal_mode[f'{c} oppgaver fullføringsgrad'] = '0.0% (0 av 0)'
+                    normal_mode[f'{c} fullføringsgrad'] = '0.0% (0 av 0 oppgaver)'
+                    exam_mode[f'{c} fullføringsgrad'] = '0.0% (0 av 0 eksamensett)'
 
-                exam_mode = {'Totale eksamensett fullføringsgrad': '0.0% (0 av 0)',
-                                'Beste eksamensett': '',
-                                'Beste eksamenscore': '0.0% (0 av 0)',
-                                'Leverte eksamensett': []}
-                doctor_mode = {'Lengste progresjon': 0,
-                               'Lengste streak': 0,
-                               'Beste nivå': 'Medisinstudent',
-                               'Beste score': '0.0% (0 av 0)',
-                               'Beste score innstillinger': []}
+                exam_mode['Beste eksamensett'] = ''
+                exam_mode['Beste eksamenscore'] = '0.0% (0 av 0 oppgaver)'
+                exam_mode['Leverte eksamensett'] = []
+
+                doctor_mode = {'Beste tittel': 'Medisinstudent',
+                               'Max antall riktige': 0,
+                               'Beste score (antall riktige)': '0.0% (0 av 0 oppgaver)',
+                               'Beste score (antall riktige) innstillinger': [],
+                               'Beste score (% riktige)': '0.0% (0 av 0 oppgaver)',
+                               'Beste score (% riktige) innstillinger': [],
+                               'Lengste streak': '0 oppgaver'}
                 statistics = {'QUIZMODUS': normal_mode,
                               'EKSAMENSMODUS': exam_mode,
                               'OVERLEGEMODUS': doctor_mode}
@@ -365,8 +369,6 @@ class QuizApp(tk.Tk):
         sources_button = tk.Button(self.intro_buttons_container, text="INFO OG KILDER", font=self.configs_tk['font_b'],
                                    bg=self.configs_tk['color_white'], height=2, width=30, command=lambda: self.create_sources_from_intro())
         sources_button.grid(row=4, column=1, pady=5, padx=5)
-        # settings_button = tk.Button(self.intro_buttons_container, text="INSTILLINGER", font=self.configs_tk['font_b'], bg=self.configs_tk['color_white'], height=2, width=30)
-        # settings_button.grid(row=4, column=1, pady=5, padx=5)
 
     def create_intro_shoutout_container(self):
         self.intro_shoutout_container = tk.Frame(self.intro_frame)
@@ -390,109 +392,18 @@ class QuizApp(tk.Tk):
         self.create_intro_buttons_container()
         self.create_intro_shoutout_container()
 
-    def create_statistics_container(self):
-        statistics_info_container = tk.Frame(self.statistics_frame)
-        statistics_info_container.pack(pady=10, fill=tk.X)
-
-        normal_statistics_container = tk.Frame(statistics_info_container)
-        normal_statistics_container.pack(pady=10, anchor='w')
-
-        normal_title_label = tk.Label(normal_statistics_container,
-                              text='QUIZMODUS', font=self.configs_tk['font_b'], justify='left',
-                              wraplength=self.configs_tk['w_length'])
-        normal_title_label.pack(anchor='w')
-        for n in self.statistics_obj.statistics_dict['QUIZMODUS']:
-            normal_text_label = tk.Label(normal_statistics_container, text=f'{n}: {self.statistics_obj.statistics_dict["QUIZMODUS"][n]}', font=self.configs_tk['font'], justify='left',
-                                         wraplength=self.configs_tk['w_length'])
-            normal_text_label.pack(anchor='w')
-
-        exam_statistics_container = tk.Frame(statistics_info_container)
-        exam_statistics_container.pack(pady=10, anchor='w')
-
-        exam_title_label = tk.Label(exam_statistics_container,
-                                      text='EKSAMENSMODUS', font=self.configs_tk['font_b'], justify='left',
-                                      wraplength=self.configs_tk['w_length'])
-        exam_title_label.pack(anchor='w')
-        for q in self.statistics_obj.statistics_dict['EKSAMENSMODUS']:
-            if q == 'Leverte eksamensett':
-                pass
-            else:
-                exam_text_label = tk.Label(exam_statistics_container, text=f'{q}: {self.statistics_obj.statistics_dict["EKSAMENSMODUS"][q]}', font=self.configs_tk['font'], justify='left',
-                                           wraplength=self.configs_tk['w_length'])
-                exam_text_label.pack(anchor='w')
-
-        doctor_statistics_container = tk.Frame(statistics_info_container)
-        doctor_statistics_container.pack(pady=10, anchor='w')
-
-        doctor_title_label = tk.Label(doctor_statistics_container,
-                                      text='OVERLEGEMODUS', font=self.configs_tk['font_b'], justify='left',
-                                      wraplength=self.configs_tk['w_length'])
-        doctor_title_label.pack(anchor='w')
-        for d in self.statistics_obj.statistics_dict['OVERLEGEMODUS']:
-            doctor_text_label = tk.Label(doctor_statistics_container, text=f'{d}: {self.statistics_obj.statistics_dict["OVERLEGEMODUS"][d]}', font=self.configs_tk['font'], justify='left',
-                                         wraplength=self.configs_tk['w_length'])
-            doctor_text_label.pack(anchor='w')
-
-    def create_statistics_frame(self):
-        self.statistics_frame = tk.Frame(self.main_canvas, pady=10, padx=80)
-        self.main_canvas.create_window((self.max_width // 2, 0), window=self.statistics_frame, anchor="n")
-        self.statistics_frame.bind('<Configure>', lambda e: self.main_canvas.configure(scrollregion=self.main_canvas.bbox("all")))
-
-        self.create_subtitle_info_container(self.statistics_frame, 'STATISTIKK')
-        self.create_statistics_container()
-
-    def create_subtitle_info_container(self, frame, title):
-        menu_info_container = tk.Frame(frame, height=40, width=790)
-        menu_info_container.pack(pady=10)
-
-        subtitle_text = tk.Label(menu_info_container,
-                                 text=title, font=self.configs_tk['font_subtitle'], justify='left',
-                                 wraplength=self.configs_tk['w_length'])
-        subtitle_text.pack(side=tk.LEFT)
-        home_button = tk.Button(menu_info_container, text='Hjem',
-                                command=lambda: self.create_intro_from_any(frame),
-                                bg=self.configs_tk['color_white'], font=self.configs_tk['font_i'],
-                                height=1, width=10)
-        home_button.pack(side=tk.RIGHT)
-        menu_info_container.pack_propagate(False)
-
-    def create_about_info_container(self, frame, title, text):
-        about_info_container = tk.Frame(frame)
-        about_info_container.pack(anchor='w', pady=10)
-
-        about_title_label = tk.Label(about_info_container,
-                                text=title, font=self.configs_tk['font_b'], justify='left',
-                                wraplength=self.configs_tk['w_length'])
-        about_title_label.pack(anchor='w')
-        about_text_label = tk.Label(about_info_container, text=text, font=self.configs_tk['font'], justify='left',
-                                wraplength=self.configs_tk['w_length'])
-        about_text_label.pack(anchor='w')
-
-    def create_link_info_container(self, frame, title, link_list):
-        link_info_container = tk.Frame(frame)
-        link_info_container.pack(anchor='w', pady=10)
-        sources_text = tk.Label(link_info_container,
-                                text=title, font=self.configs_tk['font_b'], justify='left',
-                                wraplength=self.configs_tk['w_length'])
-        sources_text.pack(anchor='w')
-        sources_link = tk.Text(link_info_container, font=self.configs_tk['font'], height=len(link_list), borderwidth=0, width=88)
-        for l in link_list:
-            sources_link.insert(1.0, f'{l}\n')
-        sources_link.configure(state='disabled')
-        sources_link.pack(anchor='w')
-
-    def create_sources_frame(self):
-        self.sources_frame = tk.Frame(self.main_canvas, pady=10, padx=80)
-        self.main_canvas.create_window((self.max_width // 2, 0), window=self.sources_frame, anchor="n")
-        self.sources_frame.bind('<Configure>', lambda e: self.main_canvas.configure(scrollregion=self.main_canvas.bbox("all")))
-
-        self.create_subtitle_info_container(self.sources_frame, 'INFO OG KILDER')
-
-        self.create_about_info_container(self.sources_frame, 'OM PROGRAMMET', '''Programmet har enkelte begrensninger man bør være klar over.\n• Enkelte oppgaver har feil i fasit/endringer etter psykometrimøtet. I programmet gis det poeng for riktig(e) svaralternativ etter psykometrimøtet. Les psykometrinotat for begrunnelsen bak fasitendring da dette ikke vises i programmet.\n• Enkelte oppgaver vil inneholde tabeller. I programmet fremvises tabeller som tekst. Feks vil følgende tabell: \n-------------------------------------------------------------\n|    A (prøve)    |    B (verdi)    |  C (referanse)  |\n-------------------------------------------------------------\n|           D          |          1           |            2            |\n-------------------------------------------------------------\n|           E          |          3           |            4            |\n-------------------------------------------------------------\nvises som "A B C D 1 2 E 3 4" i oppgaveteksten.\n• Enkelte oppgaver inneholder små tall som feks "10 opphøyd i 5" i kontekst av bakterievekst. Små tall vil vises som normale tall i programmet som vil vise "105" for forrige eksempel.\n• Programmet er ikke tilkoblet internett og oppdateringer må lastes ned manuelt. Merk at tidligere progresjon og statistikk vil forsvinne ved nedlastning og bruk av ny versjon. Sjekk datering på versjon og dato på zip-filen for å se om du har siste versjon.\n• Bugs vil forekomme for enkelte oppgaver grunnet uforutsette variasjoner i format. Dette skjer sjeldent, men eksamensett og oppgavenummer er oppgitt for hver oppgave slik at man kan slå opp fasiten manuelt ved usikkerhet.''')
-        self.create_about_info_container(self.sources_frame, 'OM MEG', 'Hei, jeg heter Sigurd Z. Zha og har vært medisin- og forskerlinjestudent ved UiO 2017-2024. Lagde dette programmet fordi det var kjipt å gjøre eksamensett manuelt. Programmet ble delt med kull V18 og jeg syntes det var kult at mange fikk nytte av det. Er nå ferdig lege, men har laget en oppdatert versjon som jeg vedlikeholder på fritiden. Disclaimer: Det er UiO, NTNU og eksamenskommisjonen som eier rettighetene til eksamensettene. Donasjoner kan gå til MedHum.\n\nTa gjerne kontakt med meg på Facebook eller på mail (sigzha@gmail.com) dersom det er noe du lurer på')
-        self.create_link_info_container(self.sources_frame, 'EKSAMENSETT', ['https://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/felles-avsluttende-deleksamen/', 'https://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/fagproven/', 'https://i.ntnu.no/wiki/-/wiki/Norsk/Eksamensoppgaver+-+Medisin+-+MH'])
-        self.create_link_info_container(self.sources_frame, 'PSYKOMETRINOTAT', ['https://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/felles-avsluttende-deleksamen/index.html'])
-        self.create_link_info_container(self.sources_frame, 'KILDEKODE', ['https://github.com/shigurd/NTNUiO.git'])
+    def create_intro_from_any(self, current_frame):
+        current_frame.destroy()
+        if self.current_mode == 'QUIZMODUS':
+            self.update_statistics_normal()
+        elif self.current_mode == 'EKSAMENSMODUS' and self.submit_exam == True:
+            self.update_statistics_exam()
+        elif self.current_mode == 'OVERLEGEMODUS':
+            if self.remaining_lives != 0:
+                self.current_largest_question_index += self.remaining_lives
+            self.update_statistics_doctor()
+        self.current_mode = ''
+        self.create_intro_frame()
 
     def create_normal_filter_container(self):
         normal_tag_filter_container = tk.Frame(self.normal_menu_frame)
@@ -676,6 +587,7 @@ class QuizApp(tk.Tk):
         box_label_info_button.menu.add_cascade(label='Dersom det står "Fullføringsgrad 0% (0 av 0 oppgaver)" betyr det at det ikke finnes noen oppgaver for angitt filter og eksamensutvalg')
         box_label_info_button.menu.add_cascade(label='Riktig besvarte oppgaver i denne modusen markeres som "fullført", og vil ikke vises på nytt med mindre oppgaven tilbakestilles')
         box_label_info_button.menu.add_cascade(label='Oppgaveutvalget (for angitt filter og eksamensutvalg), kan tilbakestilles med "Tilbakestill" dersom dette er ønskelig')
+        box_label_info_button.menu.add_cascade(label='Statistikk lagres når man trykker "Hjem"')
 
         self.normal_questions_number_label = tk.Label(box_label, text=f'Fullføringsgrad: ?% (? av ? oppgaver)',
                                                       font=self.configs_tk['font'], anchor='w', justify='left',
@@ -771,6 +683,7 @@ class QuizApp(tk.Tk):
                 r.modify_json()
 
             self.on_check_normal()
+            self.update_statistics_normal()
 
     def on_check_normal(self):
         included_year_tags = []
@@ -915,6 +828,62 @@ class QuizApp(tk.Tk):
 
         self.feedback_label = tk.Label(button_container, text='', font=self.configs_tk['font_b'])
         self.feedback_label.grid(row=1, column=1, padx=5)
+
+    def create_text_container(self, frame):
+        self.text_container = tk.Frame(frame)
+        self.text_container.pack(anchor='w')
+
+        title = f'Eksamensett: {self.questions[self.current_question_index].question_set}\nOppgave: {self.questions[self.current_question_index].question_number}'
+        question_id = tk.Label(self.text_container, text=title, font=self.configs_tk['font_i'], justify='left', wraplength=self.configs_tk['w_length'], pady=10)
+        question_id.pack(anchor='w')
+
+        self.psyko_text_label = tk.Label(self.text_container, text='',
+                                         font=self.configs_tk['font_b'], justify='left', wraplength=self.configs_tk['w_length'])
+        self.psyko_text_label.pack(anchor='w')
+
+        text = self.questions[self.current_question_index].question_text
+        question_text = tk.Label(self.text_container, text=text,
+                                 font=self.configs_tk['font'], justify='left', wraplength=self.configs_tk['w_length'])
+        question_text.pack(anchor='w')
+
+    def create_image_container(self, frame):
+        self.image_container = tk.Frame(frame)
+        self.image_container.pack(anchor='center')
+
+        if len(self.questions[self.current_question_index].image_id) != 0:
+
+            if len(self.questions[self.current_question_index].image_id) == 1:
+                image_pil = scale_image(self.questions[self.current_question_index].image_id)[0]
+                image_tk = ImageTk.PhotoImage(image_pil)
+                self.image_label = tk.Label(self.image_container, image=image_tk)
+                self.image_label.image = image_tk
+                self.image_label.pack()
+            else:
+                self.img_index = 0
+
+                self.list_pil = scale_image(self.questions[self.current_question_index].image_id)
+                image_tk = ImageTk.PhotoImage(self.list_pil[self.img_index])
+                self.image_label = tk.Label(self.image_container, image=image_tk)
+                self.image_label.image = image_tk
+                self.image_label.pack()
+
+                image_container_buttons = tk.Frame(self.image_container)
+                image_container_buttons.pack()
+                self.left_scroll_button = tk.Button(image_container_buttons, text='<', command=lambda: self.on_leftscroll_normal(),
+                                                    bg=self.configs_tk['color_white'], font=self.configs_tk['font_b'],
+                                                    height=1, width=7, state='disabled')
+                self.right_scroll_button = tk.Button(image_container_buttons, text='>',
+                                                     command=lambda: self.on_rightscroll_normal(), bg=self.configs_tk['color_white'], font=self.configs_tk['font_b'],
+                                                     height=1, width=7)
+
+                self.img_count = tk.StringVar()
+                self.img_count.set(f'Bilde: {self.img_index + 1} av {len(self.list_pil)}')
+                img_count_label = tk.Label(image_container_buttons, textvariable=self.img_count,
+                                                font=self.configs_tk['font_i'])
+
+                img_count_label.grid(row=0, column=1, padx=5)
+                self.left_scroll_button.grid(row=0, column=0, padx=5)
+                self.right_scroll_button.grid(row=0, column=2, padx=5)
 
     def create_normal_choice_container(self, frame):
         self.choice_container = tk.Frame(frame)
@@ -1181,10 +1150,10 @@ class QuizApp(tk.Tk):
                         category_total_questions += 1
                         if question.completion_status != 0:
                             category_completed_questions += 1
-            self.statistics_obj.statistics_dict["QUIZMODUS"][f'{c} oppgaver fullføringsgrad'] = f'{round((category_completed_questions * 100 / category_total_questions), 1)}% ({category_completed_questions} av {category_total_questions} oppgaver)'
+            self.statistics_obj.statistics_dict["QUIZMODUS"][f'{c} fullføringsgrad'] = f'{round((category_completed_questions * 100 / category_total_questions), 1)}% ({category_completed_questions} av {category_total_questions} oppgaver)'
             total_questions += category_total_questions
             total_completed_questions += category_completed_questions
-        self.statistics_obj.statistics_dict["QUIZMODUS"]['Totale oppgaver fullføringsgrad'] = f'{round((total_completed_questions * 100 / total_questions), 1)}% ({total_completed_questions} av {total_questions} oppgaver)'
+        self.statistics_obj.statistics_dict["QUIZMODUS"]['Total fullføringsgrad'] = f'{round((total_completed_questions * 100 / total_questions), 1)}% ({total_completed_questions} av {total_questions} oppgaver)'
         self.statistics_obj.write_dict_to_json()
 
     def on_submit_next_normal(self):
@@ -1254,7 +1223,7 @@ class QuizApp(tk.Tk):
         box_label_info_button.menu = tk.Menu(box_label_info_button, tearoff=0)
         box_label_info_button["menu"] = box_label_info_button.menu
         box_label_info_button.menu.add_cascade(
-            label='Valg av spesifikke eksamensett. Kun 1 eksamensett kan velges om gangen. Fullførte eksamensett er markert i grønt')
+            label='Valg av spesifikke eksamensett. Kun 1 eksamensett kan velges om gangen. Fullførte eksamensett markeres i grønt')
         for i in self.category_info_list:
             box_label_info_button.menu.add_cascade(label=i)
 
@@ -1322,6 +1291,7 @@ class QuizApp(tk.Tk):
         box_label_info_button.menu.add_cascade(label='Oppgaver man er usikre på i eksamensettet kan flagges som på Nasjonal deleksamen')
         box_label_info_button.menu.add_cascade(label='Alle oppgaver bør besvares før man trykker på "Lever eksamen". Dersom tiden går ut, leveres eksamen automatisk')
         box_label_info_button.menu.add_cascade(label='Beregnet eksamenscore er justert i henhold til psykometrien. Oppgaver fargekodes etter riktig/galt/psykometri/ubesvart')
+        box_label_info_button.menu.add_cascade(label='Statistikk lagres når man trykker "Hjem" etter levert eksamensett')
 
         self.exam_id_label = tk.Label(box_label, text=f'Eksamensett: ?',
                                               font=self.configs_tk['font'], anchor='w', justify='left',
@@ -1518,62 +1488,6 @@ class QuizApp(tk.Tk):
             else:
                 self.on_submit_exam()
 
-    def create_text_container(self, frame):
-        self.text_container = tk.Frame(frame)
-        self.text_container.pack(anchor='w')
-
-        title = f'Eksamensett: {self.questions[self.current_question_index].question_set}\nOppgave: {self.questions[self.current_question_index].question_number}'
-        question_id = tk.Label(self.text_container, text=title, font=self.configs_tk['font_i'], justify='left', wraplength=self.configs_tk['w_length'], pady=10)
-        question_id.pack(anchor='w')
-
-        self.psyko_text_label = tk.Label(self.text_container, text='',
-                                         font=self.configs_tk['font_b'], justify='left', wraplength=self.configs_tk['w_length'])
-        self.psyko_text_label.pack(anchor='w')
-
-        text = self.questions[self.current_question_index].question_text
-        question_text = tk.Label(self.text_container, text=text,
-                                 font=self.configs_tk['font'], justify='left', wraplength=self.configs_tk['w_length'])
-        question_text.pack(anchor='w')
-
-    def create_image_container(self, frame):
-        self.image_container = tk.Frame(frame)
-        self.image_container.pack(anchor='center')
-
-        if len(self.questions[self.current_question_index].image_id) != 0:
-
-            if len(self.questions[self.current_question_index].image_id) == 1:
-                image_pil = scale_image(self.questions[self.current_question_index].image_id)[0]
-                image_tk = ImageTk.PhotoImage(image_pil)
-                self.image_label = tk.Label(self.image_container, image=image_tk)
-                self.image_label.image = image_tk
-                self.image_label.pack()
-            else:
-                self.img_index = 0
-
-                self.list_pil = scale_image(self.questions[self.current_question_index].image_id)
-                image_tk = ImageTk.PhotoImage(self.list_pil[self.img_index])
-                self.image_label = tk.Label(self.image_container, image=image_tk)
-                self.image_label.image = image_tk
-                self.image_label.pack()
-
-                image_container_buttons = tk.Frame(self.image_container)
-                image_container_buttons.pack()
-                self.left_scroll_button = tk.Button(image_container_buttons, text='<', command=lambda: self.on_leftscroll_normal(),
-                                                    bg=self.configs_tk['color_white'], font=self.configs_tk['font_b'],
-                                                    height=1, width=7, state='disabled')
-                self.right_scroll_button = tk.Button(image_container_buttons, text='>',
-                                                     command=lambda: self.on_rightscroll_normal(), bg=self.configs_tk['color_white'], font=self.configs_tk['font_b'],
-                                                     height=1, width=7)
-
-                self.img_count = tk.StringVar()
-                self.img_count.set(f'Bilde: {self.img_index + 1} av {len(self.list_pil)}')
-                img_count_label = tk.Label(image_container_buttons, textvariable=self.img_count,
-                                                font=self.configs_tk['font_i'])
-
-                img_count_label.grid(row=0, column=1, padx=5)
-                self.left_scroll_button.grid(row=0, column=0, padx=5)
-                self.right_scroll_button.grid(row=0, column=2, padx=5)
-
     def create_exam_choice_container(self, frame):
         self.choice_container = tk.Frame(frame)
         self.choice_container.pack(anchor='w')
@@ -1659,25 +1573,6 @@ class QuizApp(tk.Tk):
     def create_exam_menu_from_intro(self):
         self.intro_frame.destroy()
         self.create_exam_menu_frame()
-
-    def create_sources_from_intro(self):
-        self.intro_frame.destroy()
-        self.create_sources_frame()
-
-    def create_statistics_from_intro(self):
-        self.intro_frame.destroy()
-        self.create_statistics_frame()
-
-    def create_intro_from_any(self, current_frame):
-        current_frame.destroy()
-        if self.current_mode == 'QUIZMODUS':
-            self.update_statistics_normal()
-        elif self.current_mode == 'EKSAMENSMODUS' and self.submit_exam == True:
-            self.update_statistics_exam()
-        elif self.current_mode == 'OVERLEGEMODUS':
-            self.update_statistics_doctor()
-        self.current_mode = ''
-        self.create_intro_frame()
 
     def on_manual_time(self):
         if self.exam_time_mode_var.get() == 'Egendefinert (0-300 min)':
@@ -1861,8 +1756,24 @@ class QuizApp(tk.Tk):
     def update_statistics_exam(self):
         if self.exam_choice.get() not in self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamensett"]:
             self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamensett"].append(self.exam_choice.get())
+        self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Total fullføringsgrad'] = f'{round(len(self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamensett"]) * 100 / len(self.file_path_list), 1)}% ({len(self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamensett"])} av {len(self.file_path_list)} eksamensett)'
 
-        self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Totale eksamensett fullføringsgrad'] = f'{round(len(self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamensett"]) * 100 / len(self.file_path_list), 1)}% ({len(self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamensett"])} av {len(self.file_path_list)})'
+        for c in self.normal_category_list:
+            category_total_exams = 0
+            category_completed_exams = 0
+
+            for pth in self.file_path_list:
+                if c in pth:
+                    file_json = open(pth)
+                    try:
+                        file_dict = json.load(file_json)
+                        category_total_exams += 1
+                        if pth.rsplit('.', 1)[0] in self.statistics_obj.statistics_dict["EKSAMENSMODUS"]["Leverte eksamensett"]:
+                            category_completed_exams += 1
+                    except:
+                        print(file_json)
+
+            self.statistics_obj.statistics_dict['EKSAMENSMODUS'][f'{c} fullføringsgrad'] = f'{round(category_completed_exams * 100 / category_total_exams, 1)}% ({category_completed_exams} av {category_total_exams} eksamensett)'
 
         if float(self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Beste eksamenscore'].split('%', 1)[0]) < (self.exam_results_correct * 100 / self.exam_results_total_after_psyko):
             self.statistics_obj.statistics_dict['EKSAMENSMODUS']['Beste eksamensett'] = self.exam_choice.get()
@@ -1912,7 +1823,7 @@ class QuizApp(tk.Tk):
         normal_level_container = tk.Frame(self.doctor_menu_frame)
         normal_level_container.pack(pady=10)
 
-        box_label = tk.LabelFrame(normal_level_container, text='MEDALJER', font=self.configs_tk['font_b'],
+        box_label = tk.LabelFrame(normal_level_container, text='TITLER', font=self.configs_tk['font_b'],
                                   padx=32, pady=20, height=410, width=792)
         box_label.pack()
         box_label_info_button = tk.Menubutton(box_label, text="Info", font=self.configs_tk['font_i'],
@@ -1921,11 +1832,11 @@ class QuizApp(tk.Tk):
         box_label_info_button.pack(anchor='w')
         box_label_info_button.menu = tk.Menu(box_label_info_button, tearoff=0)
         box_label_info_button["menu"] = box_label_info_button.menu
-        box_label_info_button.menu.add_cascade(label='Oversikt over medaljer som kan oppnås basert på antall riktige oppgaver som besvares')
+        box_label_info_button.menu.add_cascade(label='Oversikt over titler som kan oppnås basert på antall riktige oppgaver som besvares')
         box_label_info_button.menu.add_cascade(label='Medisinstudent - Tildeles ved 0 riktige oppgaver')
         for j in range(1, len(self.doctor_evolution_path_list)):
-            if j > self.doctor_evolution_path_alias_list.index(self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste nivå']):
-                box_label_info_button.menu.add_cascade(label=f'????? - Tildeles ved {10 * 2 ** (j - 1)} riktige oppgaver')
+            if j > self.doctor_evolution_path_alias_list.index(self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste tittel']):
+                box_label_info_button.menu.add_cascade(label=f'(Låst tittel) - Tildeles ved {10 * 2 ** (j - 1)} riktige oppgaver')
             else:
                 box_label_info_button.menu.add_cascade(label=f'{self.doctor_evolution_path_alias_list[j]} - Tildeles ved {10 * 2**(j - 1)} riktige oppgaver')
 
@@ -2063,6 +1974,7 @@ class QuizApp(tk.Tk):
         box_label_info_button["menu"] = box_label_info_button.menu
         box_label_info_button.menu.add_cascade(label='Oversikt over oppgavebanken og andre innstillinger før "Start"')
         box_label_info_button.menu.add_cascade(label='Oppgavene trekkes tilfeldig fra hele oppgavebanken uavhengig av tidligere besvarelser i andre moduser')
+        box_label_info_button.menu.add_cascade(label='Statistikk lagres når man trykker "Hjem". Ved prematur avslutning blir gjenværende liv regnet som oppgavefeil')
 
         self.doctor_questions_number_label = tk.Label(box_label, text=f'Antall oppgaver: ?',
                                           font=self.configs_tk['font'], anchor='w', justify='left',
@@ -2224,7 +2136,7 @@ class QuizApp(tk.Tk):
     def on_leftscroll_doctor(self):
         self.evolution_img_index -= 1
 
-        if self.evolution_img_index > self.doctor_evolution_path_alias_list.index(self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste nivå']):
+        if self.evolution_img_index > self.doctor_evolution_path_alias_list.index(self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste tittel']):
             image_tk = ImageTk.PhotoImage(scale_image([self.doctor_evolution_locked_path])[0])
         else:
             image_tk = ImageTk.PhotoImage(self.evolution_img_list_pil[self.evolution_img_index])
@@ -2238,8 +2150,8 @@ class QuizApp(tk.Tk):
         self.right_scroll_level_button.configure(state='normal')
         if self.evolution_img_index > 0:
             if self.evolution_img_index > self.doctor_evolution_path_alias_list.index(
-                    self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste nivå']):
-                self.img_level_count.set(f'????? - {10 * 2 ** (self.evolution_img_index - 1)} riktige oppgaver')
+                    self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste tittel']):
+                self.img_level_count.set(f'(Låst tittel) - {10 * 2 ** (self.evolution_img_index - 1)} riktige oppgaver')
             else:
                 self.img_level_count.set(
                     f'{self.doctor_evolution_path_alias_list[self.evolution_img_index]} - {10 * 2 ** (self.evolution_img_index - 1)} riktige oppgaver')
@@ -2249,7 +2161,7 @@ class QuizApp(tk.Tk):
     def on_rightscroll_doctor(self):
         self.evolution_img_index += 1
 
-        if self.evolution_img_index > self.doctor_evolution_path_alias_list.index(self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste nivå']):
+        if self.evolution_img_index > self.doctor_evolution_path_alias_list.index(self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste tittel']):
             image_tk = ImageTk.PhotoImage(scale_image([self.doctor_evolution_locked_path])[0])
         else:
             image_tk = ImageTk.PhotoImage(self.evolution_img_list_pil[self.evolution_img_index])
@@ -2263,8 +2175,8 @@ class QuizApp(tk.Tk):
         self.left_scroll_level_button.configure(state='normal')
         self.img_level_count.set(f'{self.doctor_evolution_path_alias_list[self.evolution_img_index]}')
         if self.evolution_img_index > 0:
-            if self.evolution_img_index > self.doctor_evolution_path_alias_list.index(self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste nivå']):
-                self.img_level_count.set(f'????? - {10 * 2 ** (self.evolution_img_index - 1)} riktige oppgaver')
+            if self.evolution_img_index > self.doctor_evolution_path_alias_list.index(self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste tittel']):
+                self.img_level_count.set(f'(Låst tittel) - {10 * 2 ** (self.evolution_img_index - 1)} riktige oppgaver')
             else:
                 self.img_level_count.set(f'{self.doctor_evolution_path_alias_list[self.evolution_img_index]} - {10 * 2 ** (self.evolution_img_index - 1)} riktige oppgaver')
         else:
@@ -2525,12 +2437,21 @@ class QuizApp(tk.Tk):
             self.evolution_name_var.set(f'{self.doctor_evolution_path_alias_list[self.evolution_img_index]}') #(Utvikling etter {10 * 2**(self.evolution_img_index)} riktige)')
 
     def update_statistics_doctor(self):
-        self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Lengste progresjon'] = self.current_largest_question_index + 1
-        self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste nivå'] = self.doctor_evolution_path_alias_list[self.evolution_img_index]
-        self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste score innstillinger'] = [self.doctor_time_mode_var.get(), self.doctor_life_mode_var.get()]
-        self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste score'] = f'{round((self.correct_questions * 100 / (self.current_largest_question_index + 1)), 1)}% ({self.correct_questions} av {self.current_largest_question_index + 1})'
-        if self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Lengste streak'] < self.longest_streak:
-            self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Lengste streak'] = self.longest_streak
+        if self.doctor_evolution_path_alias_list.index(self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste tittel']) < self.evolution_img_index:
+            self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste tittel'] = self.doctor_evolution_path_alias_list[self.evolution_img_index]
+
+        if self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Max antall riktige'] < self.correct_questions:
+            self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Max antall riktige'] = self.correct_questions
+            self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste score (antall riktige)'] = f'{round((self.correct_questions * 100 / (self.current_largest_question_index + 1)), 1)}% ({self.correct_questions} av {self.current_largest_question_index + 1} oppgaver)'
+            self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste score (antall riktige) innstillinger'] = [self.doctor_time_mode_var.get(), self.doctor_life_mode_var.get()]
+
+        if float(self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste score (% riktige)'].split('%', 1)[0]) < self.current_largest_question_index + 1:
+            self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste score (% riktige)'] = f'{round((self.correct_questions * 100 / (self.current_largest_question_index + 1)), 1)}% ({self.correct_questions} av {self.current_largest_question_index + 1} oppgaver)'
+            self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Beste score (% riktige) innstillinger'] = [self.doctor_time_mode_var.get(), self.doctor_life_mode_var.get()]
+
+        if int(self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Lengste streak'].split(' ', 1)[0]) < self.longest_streak:
+            self.statistics_obj.statistics_dict['OVERLEGEMODUS']['Lengste streak'] = f'{self.longest_streak} oppgaver'
+
         self.statistics_obj.write_dict_to_json()
 
     def on_submit_next_doctor(self):
@@ -2564,6 +2485,135 @@ class QuizApp(tk.Tk):
             self.create_image_container(self.doctor_quiz_frame)
             self.create_doctor_choice_container(self.doctor_quiz_frame)
 
+    def create_statistics_container(self):
+        statistics_info_container = tk.Frame(self.statistics_frame)
+        statistics_info_container.pack(pady=10, fill=tk.X)
+
+        normal_statistics_container = tk.Frame(statistics_info_container)
+        normal_statistics_container.pack(pady=10, anchor='w')
+
+        normal_title_label = tk.Label(normal_statistics_container,
+                                      text='QUIZMODUS', font=self.configs_tk['font_b'], justify='left',
+                                      wraplength=self.configs_tk['w_length'])
+        normal_title_label.pack(anchor='w')
+        for n in self.statistics_obj.statistics_dict['QUIZMODUS']:
+            normal_text_label = tk.Label(normal_statistics_container,
+                                         text=f'{n}: {self.statistics_obj.statistics_dict["QUIZMODUS"][n]}',
+                                         font=self.configs_tk['font'], justify='left',
+                                         wraplength=self.configs_tk['w_length'])
+            normal_text_label.pack(anchor='w')
+
+        exam_statistics_container = tk.Frame(statistics_info_container)
+        exam_statistics_container.pack(pady=10, anchor='w')
+
+        exam_title_label = tk.Label(exam_statistics_container,
+                                    text='EKSAMENSMODUS', font=self.configs_tk['font_b'], justify='left',
+                                    wraplength=self.configs_tk['w_length'])
+        exam_title_label.pack(anchor='w')
+        for q in self.statistics_obj.statistics_dict['EKSAMENSMODUS']:
+            if q == 'Leverte eksamensett':
+                pass
+            else:
+                exam_text_label = tk.Label(exam_statistics_container,
+                                           text=f'{q}: {self.statistics_obj.statistics_dict["EKSAMENSMODUS"][q]}',
+                                           font=self.configs_tk['font'], justify='left',
+                                           wraplength=self.configs_tk['w_length'])
+                exam_text_label.pack(anchor='w')
+
+        doctor_statistics_container = tk.Frame(statistics_info_container)
+        doctor_statistics_container.pack(pady=10, anchor='w')
+
+        doctor_title_label = tk.Label(doctor_statistics_container,
+                                      text='OVERLEGEMODUS', font=self.configs_tk['font_b'], justify='left',
+                                      wraplength=self.configs_tk['w_length'])
+        doctor_title_label.pack(anchor='w')
+        for d in self.statistics_obj.statistics_dict['OVERLEGEMODUS']:
+            if d == 'Max antall riktige':
+                pass
+            else:
+                doctor_text_label = tk.Label(doctor_statistics_container,
+                                             text=f'{d}: {self.statistics_obj.statistics_dict["OVERLEGEMODUS"][d]}',
+                                             font=self.configs_tk['font'], justify='left',
+                                             wraplength=self.configs_tk['w_length'])
+                doctor_text_label.pack(anchor='w')
+
+    def create_statistics_frame(self):
+        self.statistics_frame = tk.Frame(self.main_canvas, pady=10, padx=80)
+        self.main_canvas.create_window((self.max_width // 2, 0), window=self.statistics_frame, anchor="n")
+        self.statistics_frame.bind('<Configure>',
+                                   lambda e: self.main_canvas.configure(scrollregion=self.main_canvas.bbox("all")))
+
+        self.create_subtitle_info_container(self.statistics_frame, 'STATISTIKK')
+        self.create_statistics_container()
+
+    def create_statistics_from_intro(self):
+        self.intro_frame.destroy()
+        self.create_statistics_frame()
+
+    def create_subtitle_info_container(self, frame, title):
+        menu_info_container = tk.Frame(frame, height=40, width=790)
+        menu_info_container.pack(pady=10)
+
+        subtitle_text = tk.Label(menu_info_container,
+                                 text=title, font=self.configs_tk['font_subtitle'], justify='left',
+                                 wraplength=self.configs_tk['w_length'])
+        subtitle_text.pack(side=tk.LEFT)
+        home_button = tk.Button(menu_info_container, text='Hjem',
+                                command=lambda: self.create_intro_from_any(frame),
+                                bg=self.configs_tk['color_white'], font=self.configs_tk['font_i'],
+                                height=1, width=10)
+        home_button.pack(side=tk.RIGHT)
+        menu_info_container.pack_propagate(False)
+
+    def create_about_info_container(self, frame, title, text):
+        about_info_container = tk.Frame(frame)
+        about_info_container.pack(anchor='w', pady=10)
+
+        about_title_label = tk.Label(about_info_container,
+                                     text=title, font=self.configs_tk['font_b'], justify='left',
+                                     wraplength=self.configs_tk['w_length'])
+        about_title_label.pack(anchor='w')
+        about_text_label = tk.Label(about_info_container, text=text, font=self.configs_tk['font'], justify='left',
+                                    wraplength=self.configs_tk['w_length'])
+        about_text_label.pack(anchor='w')
+
+    def create_link_info_container(self, frame, title, link_list):
+        link_info_container = tk.Frame(frame)
+        link_info_container.pack(anchor='w', pady=10)
+        sources_text = tk.Label(link_info_container,
+                                text=title, font=self.configs_tk['font_b'], justify='left',
+                                wraplength=self.configs_tk['w_length'])
+        sources_text.pack(anchor='w')
+        sources_link = tk.Text(link_info_container, font=self.configs_tk['font'], height=len(link_list), borderwidth=0,
+                               width=88)
+        for l in link_list:
+            sources_link.insert(1.0, f'{l}\n')
+        sources_link.configure(state='disabled')
+        sources_link.pack(anchor='w')
+
+    def create_sources_frame(self):
+        self.sources_frame = tk.Frame(self.main_canvas, pady=10, padx=80)
+        self.main_canvas.create_window((self.max_width // 2, 0), window=self.sources_frame, anchor="n")
+        self.sources_frame.bind('<Configure>',
+                                lambda e: self.main_canvas.configure(scrollregion=self.main_canvas.bbox("all")))
+
+        self.create_subtitle_info_container(self.sources_frame, 'INFO OG KILDER')
+
+        self.create_about_info_container(self.sources_frame, 'OM PROGRAMMET',
+                                         '''Programmet har enkelte begrensninger man bør være klar over.\n• Enkelte oppgaver har feil i fasit/endringer etter psykometrimøtet. I programmet gis det poeng for riktig(e) svaralternativ etter psykometrimøtet. Les psykometrinotat for begrunnelsen bak fasitendring da dette ikke vises i programmet.\n• Enkelte oppgaver vil inneholde tabeller. I programmet fremvises tabeller som tekst. Feks vil følgende tabell: \n-------------------------------------------------------------\n|    A (prøve)    |    B (verdi)    |  C (referanse)  |\n-------------------------------------------------------------\n|           D          |          1           |            2            |\n-------------------------------------------------------------\n|           E          |          3           |            4            |\n-------------------------------------------------------------\nvises som "A B C D 1 2 E 3 4" i oppgaveteksten.\n• Enkelte oppgaver inneholder små tall som feks "10 opphøyd i 5" i kontekst av bakterievekst. Små tall vil vises som normale tall i programmet (forrige eksempel vil da vises som "105").\n• Programmet er ikke tilkoblet internett så programmet må lastes ned på nytt for oppdateringer. Merk at tidligere progresjon og statistikk vil forsvinne ved bruk av ny versjon. Sjekk datering på versjon og dato på zip-filen for å se om du har siste versjon.\n• Bugs vil forekomme for enkelte oppgaver grunnet uforutsette variasjoner i oppgaveformat. Dette skjer sjeldent, men eksamensett og oppgavenummer er oppgitt for hver oppgave slik at fasiten kan sjekkes manuelt ved usikkerhet.''')
+        self.create_about_info_container(self.sources_frame, 'OM MEG',
+                                         'Hei, jeg heter Sigurd Z. Zha og har vært medisin- og forskerlinjestudent ved UiO 2017-2024. Programmet ble laget fordi det var kjipt å gjøre eksamensett manuelt. Synes det var kult at mange på kull V18 fikk nytte av programmet, så har nå laget en oppdatert versjon med forbedringer. Er nå ferdig lege, men vedlikeholder programmet på fritiden. Disclaimer: Det er UiO, NTNU og eksamenskommisjonen som eier rettighetene til eksamensettene. Donasjoner kan gå til MedHum.\n\nTa gjerne kontakt med meg på Facebook eller på mail (sigzha@gmail.com) dersom det er noe du lurer på')
+        self.create_link_info_container(self.sources_frame, 'EKSAMENSETT', [
+            'https://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/felles-avsluttende-deleksamen/',
+            'https://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/fagproven/',
+            'https://i.ntnu.no/wiki/-/wiki/Norsk/Eksamensoppgaver+-+Medisin+-+MH'])
+        self.create_link_info_container(self.sources_frame, 'PSYKOMETRINOTAT', [
+            'https://www.uio.no/studier/program/medisin/tidligere-eksamensoppgaver/felles-avsluttende-deleksamen/index.html'])
+        self.create_link_info_container(self.sources_frame, 'KILDEKODE', ['https://github.com/shigurd/NTNUiO.git'])
+
+    def create_sources_from_intro(self):
+        self.intro_frame.destroy()
+        self.create_sources_frame()
 
 if __name__ == '__main__':
     #pyinstaller main.spec
