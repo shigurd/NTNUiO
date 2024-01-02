@@ -998,7 +998,7 @@ class QuizApp(tk.Tk):
                 self.current_largest_question_index += 1
 
                 if self.normal_submit_button['state'] == 'disabled':
-                    self.normal_submit_button.configure(state='active')
+                    self.normal_submit_button.configure(state='normal')
 
                 # Update the widgets with the new question
                 self.normal_submit_button.configure(text='SVAR', command=lambda: self.on_submit_normal(), bg=self.configs_tk['color_green'])
@@ -1015,7 +1015,7 @@ class QuizApp(tk.Tk):
                     self.create_normal_choice_container(self.normal_quiz_frame)
             elif self.current_question_index == self.current_largest_question_index and self.submit_normal == False:
                     if self.normal_submit_button['state'] == 'disabled':
-                        self.normal_submit_button.configure(state='active')
+                        self.normal_submit_button.configure(state='normal')
 
                     # Update the widgets with the new question
                     self.normal_submit_button.configure(text='SVAR', command=lambda: self.on_submit_normal(),
@@ -1131,6 +1131,30 @@ class QuizApp(tk.Tk):
                 f'Riktige: {round((self.correct_questions * 100 / (self.current_largest_question_index + 1)), 1)}% ({self.correct_questions} av {self.current_largest_question_index + 1})')
             self.normal_submit_button.configure(text='NESTE', command=lambda: self.on_submit_next_normal(), bg=self.configs_tk['color_green'])
 
+    def on_submit_next_normal(self):
+        # Move to the next question
+        self.current_question_index += 1
+        self.current_largest_question_index += 1
+        self.submit_normal = False
+        if self.current_question_index >= len(self.questions):
+            self.normal_submit_button.configure(text='FULLFØRT', state='disabled')
+        else:
+            # Update the widgets with the new question
+            self.progress_count.set(f'Progresjon: {self.current_question_index + 1} av {len(self.questions)}')
+
+            self.normal_submit_button.configure(text='SVAR', command=lambda: self.on_submit_normal(), bg=self.configs_tk['color_green'])
+            self.feedback_label.configure(text='')
+            self.text_container.destroy()
+            self.image_container.destroy()
+            self.choice_container.destroy()
+
+            self.create_text_container(self.normal_quiz_frame)
+            self.create_image_container(self.normal_quiz_frame)
+            if self.normal_hidden_mode_var.get() == 'Skjult':
+                self.normal_submit_button.configure(text='VIS', command=lambda: self.on_show_normal())
+            else:
+                self.create_normal_choice_container(self.normal_quiz_frame)
+
     def update_statistics_normal(self):
         total_questions = 0
         total_completed_questions = 0
@@ -1156,31 +1180,6 @@ class QuizApp(tk.Tk):
             total_completed_questions += category_completed_questions
         self.statistics_obj.statistics_dict["QUIZMODUS"]['Total fullføringsgrad'] = f'{round((total_completed_questions * 100 / total_questions), 1)}% ({total_completed_questions} av {total_questions} oppgaver)'
         self.statistics_obj.write_dict_to_json()
-
-    def on_submit_next_normal(self):
-        # Move to the next question
-        self.current_question_index += 1
-        self.current_largest_question_index += 1
-        self.submit_normal = False
-        if self.current_question_index >= len(self.questions):
-            self.normal_quiz_frame.destroy()
-            self.create_normal_menu_frame()
-        else:
-            # Update the widgets with the new question
-            self.progress_count.set(f'Progresjon: {self.current_question_index + 1} av {len(self.questions)}')
-
-            self.normal_submit_button.configure(text='SVAR', command=lambda: self.on_submit_normal(), bg=self.configs_tk['color_green'])
-            self.feedback_label.configure(text='')
-            self.text_container.destroy()
-            self.image_container.destroy()
-            self.choice_container.destroy()
-
-            self.create_text_container(self.normal_quiz_frame)
-            self.create_image_container(self.normal_quiz_frame)
-            if self.normal_hidden_mode_var.get() == 'Skjult':
-                self.normal_submit_button.configure(text='VIS', command=lambda: self.on_show_normal())
-            else:
-                self.create_normal_choice_container(self.normal_quiz_frame)
 
     def create_exam_tag_filter_container(self):
         exam_tag_filter_container = tk.Frame(self.exam_menu_frame)
@@ -1405,13 +1404,13 @@ class QuizApp(tk.Tk):
         button_container = tk.Frame(self.exam_quiz_frame)
         button_container.pack(anchor='center')
 
-        previous_button = tk.Button(button_container, text='<', command=lambda: self.on_previous_exam(),
+        self.previous_button_exam = tk.Button(button_container, text='<', command=lambda: self.on_previous_exam(),
                                     bg=self.configs_tk['color_white'], height=1, width=7, font=self.configs_tk['font_b'])
-        previous_button.grid(row=0, column=0, padx=5)
+        self.previous_button_exam.grid(row=0, column=0, padx=5)
         self.flag_button = tk.Button(button_container, text='Flagg', command=lambda: self.on_flag_question_exam(), fg=self.configs_tk['color_white'], bg=self.configs_tk['color_grey'], height=1, width=14, font=self.configs_tk['font_i'])
         self.flag_button.grid(row=0, column=1, padx=5)
-        next_button = tk.Button(button_container, text='>', command=lambda: self.on_next_exam(), bg=self.configs_tk['color_white'], height=1, width=7, font=self.configs_tk['font_b'])
-        next_button.grid(row=0, column=2, padx=5)
+        self.next_button_exam = tk.Button(button_container, text='>', command=lambda: self.on_next_exam(), bg=self.configs_tk['color_white'], height=1, width=7, font=self.configs_tk['font_b'])
+        self.next_button_exam.grid(row=0, column=2, padx=5)
 
         self.flag_label = tk.Label(button_container, text='', font=self.configs_tk['font_b'])
         self.flag_label.grid(row=1, column=1, padx=5)
@@ -1685,6 +1684,20 @@ class QuizApp(tk.Tk):
         self.current_question_index = question_index
         self.horizontal_button_list[self.current_question_index].configure(font=self.configs_tk['font_ib'])
 
+        if self.current_question_index in range(1, len(self.questions) - 1):
+            if self.previous_button_exam['state'] == 'disabled':
+                self.previous_button_exam.configure(state='normal')
+            if self.next_button_exam['state'] == 'disabled':
+                self.next_button_exam.configure(state='normal')
+        elif self.current_question_index == len(self.questions) - 1:
+            self.next_button_exam.configure(state='disabled')
+            if self.previous_button_exam['state'] == 'disabled':
+                self.previous_button_exam.configure(state='normal')
+        elif self.current_question_index == 0:
+            self.previous_button_exam.configure(state='disabled')
+            if self.next_button_exam['state'] == 'disabled':
+                self.next_button_exam.configure(state='normal')
+
         # Update the widgets with the new question
         self.text_container.destroy()
         self.image_container.destroy()
@@ -1707,8 +1720,20 @@ class QuizApp(tk.Tk):
     def on_next_exam(self):
         if self.current_question_index < len(self.questions) - 1:
             self.current_question_index += 1
+
+            if self.current_question_index == len(self.questions) - 1:
+                self.next_button_exam.configure(state='disabled')
+            if self.previous_button_exam['state'] == 'disabled':
+                self.previous_button_exam.configure(state='normal')
+
             self.horizontal_button_list[self.current_question_index].configure(font=self.configs_tk['font_ib'])
             self.horizontal_button_list[self.current_question_index - 1].configure(font=self.configs_tk['font_i'])
+
+            if self.flagged_question_list[self.current_question_index] == 1:
+                self.flag_label.configure(text='⚑')
+            else:
+                self.flag_label.configure(text='')
+            self.progress_count.set(f'Progresjon: {self.current_question_index + 1} av {len(self.questions)}')
 
             # Update the widgets with the new question
             self.text_container.destroy()
@@ -1723,15 +1748,15 @@ class QuizApp(tk.Tk):
             if self.submit_exam == True:
                 self.exam_submit_button.configure(state='disabled')
 
-            if self.flagged_question_list[self.current_question_index] == 1:
-                self.flag_label.configure(text='⚑')
-            else:
-                self.flag_label.configure(text='')
-            self.progress_count.set(f'Progresjon: {self.current_question_index + 1} av {len(self.questions)}')
-
     def on_previous_exam(self):
         if self.current_question_index > 0:
             self.current_question_index -= 1
+
+            if self.current_question_index == 0:
+                self.previous_button_exam.configure(state='disabled')
+            if self.next_button_exam['state'] == 'disabled':
+                self.next_button_exam.configure(state='normal')
+
             self.horizontal_button_list[self.current_question_index].configure(font=self.configs_tk['font_ib'])
             self.horizontal_button_list[self.current_question_index + 1].configure(font=self.configs_tk['font_i'])
 
