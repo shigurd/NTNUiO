@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import tkinter as tk
+from tkinter import messagebox
 from tkinter import ttk
 from PIL import Image, ImageTk
 import json
@@ -987,6 +988,7 @@ class QuizApp(tk.Tk):
         if self.current_question_index >= len(self.questions):
             self.normal_quiz_frame.destroy()
             self.create_normal_menu_frame()
+            self.update_statistics_normal()
         else:
             if self.current_question_index > self.current_largest_question_index:
 
@@ -1088,6 +1090,7 @@ class QuizApp(tk.Tk):
         else:
             self.normal_quiz_frame.destroy()
             self.create_normal_menu_frame()
+            self.update_statistics_normal()
 
     def on_submit_normal(self):
         if self.choice_var.get() != '0':
@@ -1405,7 +1408,7 @@ class QuizApp(tk.Tk):
         button_container.pack(anchor='center')
 
         self.previous_button_exam = tk.Button(button_container, text='<', command=lambda: self.on_previous_exam(),
-                                    bg=self.configs_tk['color_white'], height=1, width=7, font=self.configs_tk['font_b'])
+                                    bg=self.configs_tk['color_white'], height=1, width=7, font=self.configs_tk['font_b'], state='disabled')
         self.previous_button_exam.grid(row=0, column=0, padx=5)
         self.flag_button = tk.Button(button_container, text='Flagg', command=lambda: self.on_flag_question_exam(), fg=self.configs_tk['color_white'], bg=self.configs_tk['color_grey'], height=1, width=14, font=self.configs_tk['font_i'])
         self.flag_button.grid(row=0, column=1, padx=5)
@@ -1811,6 +1814,7 @@ class QuizApp(tk.Tk):
         self.statistics_obj.write_dict_to_json()
 
     def on_submit_exam(self):
+        #if tk.messagebox.askokcancel("Lever eksamen",f'Er du sikker på at du vil levere eksamen?') == True:
         n_total = 0
         n_correct = 0
         n_unanswered = 0
