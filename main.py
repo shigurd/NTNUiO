@@ -240,7 +240,7 @@ class QuizApp(tk.Tk):
         self.doctor_life_mode_var = tk.StringVar()
         self.exam_choice = tk.StringVar()
         self.choice_var = tk.StringVar()
-        self.category_info_list = ['Nasjonal - Nasjonal delprøve (Avsluttende eksamen for medisinstudiet i Norge)',
+        self.category_info_list = ['Nasjonal - Nasjonal delprøve (Avsluttende eksamen for medisinstudier i Norge)',
                           'MFFAGPR - Fagprøven (Tilsvarer Nasjonal delprøve for leger utdannet utenfor EØS og Sveits og har overlappende oppgaver)',
                           'MD4062 - Modul 8 ekvivalent på NTNU (Tidligere avsluttende eksamen for medisinstudiet på NTNU)',
                           'MD4061 - Modul 7 ekvivalent på NTNU (Allmennmedisin, miljø/samfunnsmedisin, arbeidsmedisin, epidemiologi, medisinsk statistikk)',
