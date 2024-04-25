@@ -219,6 +219,7 @@ class QuizApp(tk.Tk):
         self.statstics_path = 'statistics.json'
         self.name = 'NTNUiO Quiz'
         self.version = '01.01.24'
+        self.intro_gif = 'ascii-boy.gif'
         self.configs_tk = {'font': 'Helvetica 12',
                            'font_i': 'Helvetica 12 italic',
                            'font_b': 'Helvetica 12 bold',
@@ -306,7 +307,7 @@ class QuizApp(tk.Tk):
 
         gif_label = tk.Label(self.intro_logo_container)
         gif_label.pack(padx=140, pady=5)
-        mygif = Gifplay(gif_label, 'ascii-boy.gif', 0.1)
+        mygif = Gifplay(gif_label, self.intro_gif, 0.1)
         mygif.play()
 
     def create_intro_buttons_container(self):
