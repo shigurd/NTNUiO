@@ -670,7 +670,7 @@ class QuizApp(tk.Tk):
 
             completed_questions = []
             for pth in included_paths:
-                file_json = open(pth)
+                file_json = open(pth, encoding='utf-8')
                 try:
                     file_dict = json.load(file_json)
                 except:
@@ -721,7 +721,7 @@ class QuizApp(tk.Tk):
             completed_questions = 0
 
             for pth in included_paths:
-                file_json = open(pth)
+                file_json = open(pth, encoding='utf-8')
                 try:
                     file_dict = json.load(file_json)
                 except:
@@ -781,7 +781,7 @@ class QuizApp(tk.Tk):
             self.normal_filter_tags = input_tags_to_list(self.normal_text_input.get("1.0", 'end-1c'))
 
             for pth in included_paths:
-                file_json = open(pth)
+                file_json = open(pth, encoding='utf-8')
                 try:
                     file_dict = json.load(file_json)
                     for q in range(1, len(file_dict) + 1):
@@ -1168,7 +1168,7 @@ class QuizApp(tk.Tk):
 
             for pth in self.file_path_list:
                 if c in pth:
-                    file_json = open(pth)
+                    file_json = open(pth, encoding='utf-8')
                     try:
                         file_dict = json.load(file_json)
                     except:
@@ -1794,7 +1794,7 @@ class QuizApp(tk.Tk):
 
             for pth in self.file_path_list:
                 if c in pth:
-                    file_json = open(pth)
+                    file_json = open(pth, encoding='utf-8')
                     try:
                         file_dict = json.load(file_json)
                         category_total_exams += 1
@@ -2218,7 +2218,7 @@ class QuizApp(tk.Tk):
         included_questions = []
 
         for pth in self.file_path_list:
-            file_json = open(pth)
+            file_json = open(pth, encoding='utf-8')
             try:
                 file_dict = json.load(file_json)
                 for q in range(1, len(file_dict) + 1):
@@ -2255,7 +2255,7 @@ class QuizApp(tk.Tk):
             included_questions = []
 
             for pth in self.file_path_list:
-                file_json = open(pth)
+                file_json = open(pth, encoding='utf-8')
                 try:
                     file_dict = json.load(file_json)
                     for q in range(1, len(file_dict) + 1):
