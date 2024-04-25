@@ -551,7 +551,7 @@ class QuizApp(tk.Tk):
         box_label_info_button.menu = tk.Menu(box_label_info_button, tearoff=0)
         box_label_info_button["menu"] = box_label_info_button.menu
         box_label_info_button.menu.add_cascade(
-            label='Valg for av skjuling av svaralternativer for eksamensutvalget')
+            label='Valg for skjuling av svaralternativer for eksamensutvalget')
         box_label_info_button.menu.add_cascade(
             label='Standard - Oppgaveteksten gis sammen med svaralternativer som ved vanlig multiple choice')
         box_label_info_button.menu.add_cascade(
