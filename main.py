@@ -218,7 +218,7 @@ class QuizApp(tk.Tk):
         self.file_path_list = file_path_list
         self.statstics_path = 'statistics.json'
         self.name = 'NTNUiO Quiz'
-        self.version = '01.01.24'
+        self.version = '22.06.24'
         self.intro_gif = 'ascii-boy.gif'
         self.configs_tk = {'font': 'Helvetica 12',
                            'font_i': 'Helvetica 12 italic',
@@ -250,7 +250,7 @@ class QuizApp(tk.Tk):
                           'MD4030 - Modul 3+4 ekvivalent på NTNU (Indremedisin, kirurgi, radiologi, øye, nevrologi, øre-nese-hals, onkologi, patologi)',
                           'MD4020 - Modul 2 ekvivalent på NTNU (Anatomi, fysiologi, patologi, immunologi, mikrobiologi, farmakologi)',
                           'MD4011 - Modul 1 ekvivalent på NTNU (Cellebiologi, biokjemi, genetikk, histologi, embryologi)']
-        self.normal_year_list = [f'{y}' for y in range(2023, 2015, -1)]
+        self.normal_year_list = [f'{y}' for y in range(2024, 2015, -1)]
         self.normal_category_list = ['Nasjonal', 'MFFAGPR', 'MD4062', 'MD4061', 'MD4043', 'MD4042', 'MD4030', 'MD4020', 'MD4011']
         self.normal_order_mode_list = ['Kronologisk', 'Tilfeldig']
         self.normal_hidden_mode_list = ['Standard', 'Skjult']

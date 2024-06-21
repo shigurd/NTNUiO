@@ -318,7 +318,7 @@ def printJson(json_pth):
         print(file_dict[q])
 
 def generateTxtAndJSON(pdf):
-    pdfExtractorToHTML(pdf) #comment out after fixing txt files because of outliers, makes txt files
+    pdfExtractorToHTML(pdf, with_img=True) #comment out after fixing txt files because of outliers, makes txt files
     pdf_name = os.path.basename(pdf).rsplit(".", 1)[0]
     textToJsonImproved(f'{pdf_name}.txt') #makes json
     # printJson(f'{pdf.rsplit(".")[0]}.json')
