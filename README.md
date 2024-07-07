@@ -1,6 +1,6 @@
 # Installasjon
 
-Følg instruksene i "LES_MEG.pdf" filen for installasjon
+Følg instruksene i "LES MEG - ntnuio_eksamensquiz.pdf" filen for installasjon
 
 # Om programmet
 
