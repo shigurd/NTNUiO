@@ -340,6 +340,7 @@ if __name__ == '__main__':
     for pdf in file_pdfs:
         #pdfExtractorToHTMLTest(pdf)
         #generateTxtAndJSON(pdf)
+
         #pdfExtractorToHTML(pdf, with_img=True) # makes txt
         generateJSONFromTxt(pdf)  # makes json
 

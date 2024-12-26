@@ -12,8 +12,8 @@ def invert_background_ascii(gif_name):
         img.seek(frame_num)
         new_frame = Image.new('RGBA', img.size)
         img_inverse_np = 255 - np.asarray(img)
-        print(np.asarray(img))
-        print(img_inverse_np)
+        #print(np.asarray(img))
+        #print(img_inverse_np)
         img_inverse = Image.fromarray(np.uint8(img_inverse_np))
         #new_frame_inverse_np = (np.asarray(new_frame) - 1) *-1
         new_frame.paste(img_inverse)
@@ -23,6 +23,30 @@ def invert_background_ascii(gif_name):
         new.append(new_frame)
 
     new[0].save('new.gif', append_images=new[1:], save_all=True, optimize=False, loop=0)
+
+
+
+def gray_background_gif(gif_name):
+    img = Image.open(gif_name)
+
+    new = []
+    for frame_num in range(1, img.n_frames):
+        img.seek(frame_num)
+        new_frame = Image.new('RGBA', img.size)
+
+        img_np = np.array(img.convert('L'))
+        # print(img_np)
+        # print(img_np.shape)
+        img_np[img_np > 232] = 240
+        img_modified = Image.fromarray(np.uint8(img_np))
+        # new_frame_inverse_np = (np.asarray(new_frame) - 1) *-1
+        new_frame.paste(img_modified)
+        new_frame = new_frame.convert(mode='P', palette=Image.ADAPTIVE)
+        # print(np.asarray(new_frame))
+        # new_frame_inverse = Image.fromarray(np.uint8(new_frame_inverse_np * 255) , 'P')
+        new.append(new_frame)
+
+    new[0].save(f'new.gif', append_images=new[:], save_all=True, optimize=True, loop=0)
 
 def create_gif(img_list):
     gif_name = 'new.gif'
@@ -72,4 +96,5 @@ def background_change_ascii(img_name_list):
 if __name__ =='__main__':
     #create_gif(['ascii-art evolution man0.png', 'ascii-art evolution man1.png', 'ascii-art evolution man2.png', 'ascii-art evolution man3.png', 'ascii-art evolution man4.png', 'ascii-art evolution man5.png', 'ascii-art evolution man6.png'])
     #background_change_ascii(['ascii-art evolution man0.png', 'ascii-art evolution man1.png', 'ascii-art evolution man2.png', 'ascii-art evolution man3.png', 'ascii-art evolution man4.png', 'ascii-art evolution man5.png', 'ascii-art evolution man6.png'])
-    background_change_ascii(['ascii-lock0.png'])
+    #background_change_ascii(['ascii-lock0.png'])
+    gray_background_gif('surgeon.gif')

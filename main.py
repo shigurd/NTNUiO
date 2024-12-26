@@ -218,7 +218,7 @@ class QuizApp(tk.Tk):
         self.file_path_list = file_path_list
         self.statstics_path = 'statistics.json'
         self.name = 'NTNUiO Quiz'
-        self.version = '22.06.24'
+        self.version = '27.12.24'
         self.intro_gif = 'ascii-boy.gif'
         self.configs_tk = {'font': 'Helvetica 12',
                            'font_i': 'Helvetica 12 italic',
