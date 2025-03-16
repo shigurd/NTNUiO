@@ -1,6 +1,6 @@
 # Installasjon
 
-Følg instruksene i "LES MEG - ntnuio_eksamensquiz.pdf" filen for installasjon
+Følg instruksene i "LES MEG - ntnuio_eksamensquiz.pdf" filen for installasjon. Offisiell link for nedlastning er https://www.dropbox.com/home/medisin_programmer/ntnuio_eksamensquiz_windows 
 
 # Om programmet
 
