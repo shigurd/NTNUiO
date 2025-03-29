@@ -1,6 +1,6 @@
 # Installasjon
 
-Følg instruksene i "LES MEG - ntnuio_eksamensquiz.pdf" filen for installasjon. Offisiell link for nedlastning er https://www.dropbox.com/scl/fo/f2cs4k20gh7p640i3kzii/AFfJIRxbrVhvEaM_u4s-XCU?rlkey=tcgt9xx9xzej2mz9yvmiq8a98&st=q0cbdrhz&dl=0
+Følg instruksene i "LES MEG - ntnuio_eksamensquiz.pdf" filen for installasjon. Offisiell link for nedlastning er https://www.dropbox.com/scl/fo/jowtb5437s3yhioitn1f4/AI9O18NLpSGhWa6Ta2bcW9g?rlkey=9pl8qpphpezwjdzi6mjh2dnrk&st=9bas3m0e&dl=0
 
 # Om programmet
 
