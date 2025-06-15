@@ -218,7 +218,7 @@ class QuizApp(tk.Tk):
         self.file_path_list = file_path_list
         self.statstics_path = 'statistics.json'
         self.name = 'NTNUiO Quiz'
-        self.version = '27.12.24'
+        self.version = '14.06.25'
         self.intro_gif = 'ascii-boy.gif'
         self.configs_tk = {'font': 'Helvetica 12',
                            'font_i': 'Helvetica 12 italic',
@@ -250,7 +250,7 @@ class QuizApp(tk.Tk):
                           'MD4030 - Modul 3+4 ekvivalent på NTNU (Indremedisin, kirurgi, radiologi, øye, nevrologi, øre-nese-hals, onkologi, patologi)',
                           'MD4020 - Modul 2 ekvivalent på NTNU (Anatomi, fysiologi, patologi, immunologi, mikrobiologi, farmakologi)',
                           'MD4011 - Modul 1 ekvivalent på NTNU (Cellebiologi, biokjemi, genetikk, histologi, embryologi)']
-        self.normal_year_list = [f'{y}' for y in range(2024, 2015, -1)]
+        self.normal_year_list = [f'{y}' for y in range(2025, 2015, -1)]
         self.normal_category_list = ['Nasjonal', 'MFFAGPR', 'MD4062', 'MD4061', 'MD4043', 'MD4042', 'MD4030', 'MD4020', 'MD4011']
         self.normal_order_mode_list = ['Kronologisk', 'Tilfeldig']
         self.normal_hidden_mode_list = ['Standard', 'Skjult']
@@ -441,7 +441,7 @@ class QuizApp(tk.Tk):
         normal_year_box_container = tk.Frame(self.normal_menu_checkbox_container)
         normal_year_box_container.grid(row=1, column=0, sticky='n')
 
-        box_label = tk.LabelFrame(normal_year_box_container, text='ÅRGANG', font=self.configs_tk['font_b'], padx=30, pady=20, height=419, width=198)
+        box_label = tk.LabelFrame(normal_year_box_container, text='ÅRGANG', font=self.configs_tk['font_b'], padx=30, pady=20, height=449, width=198)
         box_label.pack()
         self.normal_check_label_year = []
         self.normal_check_label_year_vars = []
@@ -480,7 +480,7 @@ class QuizApp(tk.Tk):
         normal_category_box_container = tk.Frame(self.normal_menu_checkbox_container)
         normal_category_box_container.grid(row=1, column=1, sticky='n')
 
-        box_label = tk.LabelFrame(normal_category_box_container, text='EKSAMENSSETT', font=self.configs_tk['font_b'], padx=30, pady=20, height=419, width=198)
+        box_label = tk.LabelFrame(normal_category_box_container, text='EKSAMENSSETT', font=self.configs_tk['font_b'], padx=30, pady=20, height=449, width=198)
         box_label.pack()
         self.normal_category_check_label = []
         self.normal_category_check_label_vars = []
@@ -517,7 +517,7 @@ class QuizApp(tk.Tk):
         normal_order_box_container = tk.Frame(self.normal_menu_checkbox_container)
         normal_order_box_container.grid(row=1, column=2, sticky='n')
 
-        box_label = tk.LabelFrame(normal_order_box_container, text='REKKEFØLGE', font=self.configs_tk['font_b'], padx=30, pady=20, height=419, width=198)
+        box_label = tk.LabelFrame(normal_order_box_container, text='REKKEFØLGE', font=self.configs_tk['font_b'], padx=30, pady=20, height=449, width=198)
         box_label.pack()
 
         box_label_info_button = tk.Menubutton(box_label, text="Info", font=self.configs_tk['font_i'],
@@ -541,7 +541,7 @@ class QuizApp(tk.Tk):
         hidden_mode_container = tk.Frame(self.normal_menu_checkbox_container)
         hidden_mode_container.grid(row=1, column=3, sticky='n')
 
-        box_label = tk.LabelFrame(hidden_mode_container, text='ALTERNATIVER', font=self.configs_tk['font_b'], padx=30, pady=20, height=419, width=198)
+        box_label = tk.LabelFrame(hidden_mode_container, text='ALTERNATIVER', font=self.configs_tk['font_b'], padx=30, pady=20, height=449, width=198)
         box_label.pack()
 
         box_label_info_button = tk.Menubutton(box_label, text="Info", font=self.configs_tk['font_i'],
