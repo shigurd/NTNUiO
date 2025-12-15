@@ -56,14 +56,31 @@ def pdfExtractorToHTML(file_pdf, with_img=True):
                     pass
 
                 psyko_list = pimg_child.select('[style="font-family:Arial,serif;font-size:10.0pt;color:#ed1c24"]')
-                text_list = pimg_child.select('[style*="font-family:Arial,serif;font-size:10.0pt;color:#363639"], [style="font-family:Arial,serif;font-size:8.0pt;color:#363639"]')
-                answer_list = pimg_child.select('[style="font-family:Arial,serif;font-size:10.0pt;color:#0071a2"]')
+                answer_list = pimg_child.select(
+                    '[style="font-family:Arial,serif;font-size:10.0pt;color:#0071a2"]')  # select blue
+                temp_text_list = pimg_child.select(
+                    '[style*="font-family:Arial,serif;font-size:10.0pt;color:#363639"], [style="font-family:Arial,serif;font-size:8.0pt;color:#363639"]')
                 end_list = pimg_child.select('[style="font-family:Arial,serif;font-size:3.0pt;color:#363639"]')
 
                 temp_text = ''
-                for text in text_list:
+                for text in temp_text_list:
                     temp_text += text.get_text()
-                temp_text_line += temp_text
+
+                if answer_list != []:
+                    temp_text_line += temp_text  # blue text identified
+                elif answer_list == [] and pimg_child.select('i') == []:
+                    temp_text_line += temp_text  # no blue text and no italics
+                else:
+                    temp_cursive_text = ''
+                    cursive_list = pimg_child.select('i')
+                    for cursive_text in cursive_list:
+                        temp_cursive_text += cursive_text.get_text()
+
+                    if len(temp_cursive_text) > 1 and len(temp_text) / len(temp_cursive_text) < 1:
+                        answer_list = temp_text_list  # cursive text less than half of normal text
+                        temp_text = ''
+                    else:
+                        temp_text_line += temp_text
 
                 for answer in answer_list:
                     temp_answer_line += answer.get_text()
@@ -94,29 +111,6 @@ def pdfExtractorToHTML(file_pdf, with_img=True):
                 if end_list != []:
                     text_file.write(f'#end#\n')
 
-def pdfExtractorToHTMLTest(file_pdf):
-    doc = fitz.open(file_pdf)
-    image_num = 1
-    file_name = os.path.basename(file_pdf).rsplit(".", 1)[0]
-
-    for page_num in range(doc.page_count):
-        page = doc[page_num]
-        page_html = page.get_text('html')
-        soup = BeautifulSoup(page_html, 'html.parser')
-
-        n_p = soup.find('div')
-        p_children = n_p.findChildren(['p', 'img'], recursive=False)
-        for pimg_child in p_children:
-            temp_text_line = ''
-            temp_answer_line = '$'
-            temp_psyko_line = '¤'
-
-            img_64 = None
-            try:
-                img_64 = pimg_child['src'].split(',', 1)[-1]
-            except:
-                pass
-
 def pdfExtractorToHTMLprint(file_pdf):
     doc = fitz.open(file_pdf)
     image_num = 0
@@ -141,14 +135,31 @@ def pdfExtractorToHTMLprint(file_pdf):
                 pass
 
             psyko_list = pimg_child.select('[style="font-family:Arial,serif;font-size:10.0pt;color:#ed1c24"]')
-            text_list = pimg_child.select('[style*="font-family:Arial,serif;font-size:10.0pt;color:#363639"]')
-            answer_list = pimg_child.select('[style="font-family:Arial,serif;font-size:10.0pt;color:#0071a2"]')
+            answer_list = pimg_child.select(
+                '[style="font-family:Arial,serif;font-size:10.0pt;color:#0071a2"]')  # select blue
+            temp_text_list = pimg_child.select(
+                '[style*="font-family:Arial,serif;font-size:10.0pt;color:#363639"], [style="font-family:Arial,serif;font-size:8.0pt;color:#363639"]')
             end_list = pimg_child.select('[style="font-family:Arial,serif;font-size:3.0pt;color:#363639"]')
 
             temp_text = ''
-            for text in text_list:
+            for text in temp_text_list:
                 temp_text += text.get_text()
-            temp_text_line += temp_text
+
+            if answer_list != []:
+                temp_text_line += temp_text  # blue text identified
+            elif answer_list == [] and pimg_child.select('i') == []:
+                temp_text_line += temp_text  # no blue text and no italics
+            else:
+                temp_cursive_text = ''
+                cursive_list = pimg_child.select('i')
+                for cursive_text in cursive_list:
+                    temp_cursive_text += cursive_text.get_text()
+
+                if len(temp_cursive_text) > 1 and len(temp_text) / len(temp_cursive_text) < 1:
+                    answer_list = temp_text_list  # cursive text less than half of normal text
+                    temp_text = ''
+                else:
+                    temp_text_line += temp_text
 
             for answer in answer_list:
                 temp_answer_line += answer.get_text()

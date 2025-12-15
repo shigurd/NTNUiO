@@ -162,7 +162,13 @@ def check_tag_in_question(question, comma_sepatered_tags_list):
     #print(question.question_number)
     for choice_key in question.abcd:
         question_string += ' ' + question.abcd[choice_key]['answer']
-
+    '''
+    try:
+        for choice_key in question.abcd:
+            question_string += ' ' + question.abcd[choice_key]['answer']
+    except:
+        print(question.question_set, question.question_number)
+    '''
     #input_string_lower = question_string.lower()
     #tag_list_lower = [tag.lower() for tag in comma_sepatered_tags_list]
 
