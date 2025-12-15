@@ -160,6 +160,7 @@ def check_tag_in_question(question, comma_sepatered_tags_list):
     question_string = question.question_text
     #print(question.question_set)
     #print(question.question_number)
+
     for choice_key in question.abcd:
         question_string += ' ' + question.abcd[choice_key]['answer']
     '''

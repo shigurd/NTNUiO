@@ -76,7 +76,7 @@ def pdfExtractorToHTML(file_pdf, with_img=True):
                     for cursive_text in cursive_list:
                         temp_cursive_text += cursive_text.get_text()
 
-                    if len(temp_cursive_text) > 1 and len(temp_text) / len(temp_cursive_text) < 1:
+                    if len(temp_cursive_text) > 1 and len(temp_text) / len(temp_cursive_text) <= 1 and temp_cursive_text[-1] != '?':
                         answer_list = temp_text_list  # cursive text less than half of normal text
                         temp_text = ''
                     else:
@@ -155,7 +155,7 @@ def pdfExtractorToHTMLprint(file_pdf):
                 for cursive_text in cursive_list:
                     temp_cursive_text += cursive_text.get_text()
 
-                if len(temp_cursive_text) > 1 and len(temp_text) / len(temp_cursive_text) < 1:
+                if len(temp_cursive_text) > 1 and len(temp_text) / len(temp_cursive_text) <= 1 and temp_cursive_text[-1] != '?':
                     answer_list = temp_text_list  # cursive text less than half of normal text
                     temp_text = ''
                 else:
